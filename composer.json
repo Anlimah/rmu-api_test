@@ -1,0 +1,11 @@
+{
+    "require": {
+        "vlucas/phpdotenv": "^2.4",
+        "phpmailer/phpmailer": "^6.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Src\\": "src/"
+        }
+    }
+}
