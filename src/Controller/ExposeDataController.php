@@ -296,4 +296,9 @@ class ExposeDataController
         $params = array(":nc" => $request);
         $this->dm->inputData($query, $params);
     }
+
+    public function getSecretKeyFromDatabase($client_id)
+    {
+        return $this->dm->getID("SELECT * FROM `api_users` WHERE client_id=:c", array(':c' => $client_id));
+    }
 }
