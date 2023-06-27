@@ -6,40 +6,40 @@ use Src\Controller\USSDHandler;
 use Src\Controller\PaymentController;
 use Src\Controller\ExposeDataController;
 
-// Get the authorization header
-$authorizationHeader = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : '';
+switch ($_SERVER["REQUEST_METHOD"]) {
+    case 'POST':
 
-// Extract the secret key from the authorization header
-$secretKey = null;
-if (preg_match('/Bearer\s+(.*)$/i', $authorizationHeader, $matches)) {
-    $secretKey = $matches[1];
-}
+        // Get the authorization header
+        $authorizationHeader = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : '';
 
-if ($secretKey) {
-    // Retrieve the client ID and signature from the secret key
-    list($clientId, $signature) = explode(':', $secretKey);
+        // Extract the secret key from the authorization header
+        $secretKey = null;
+        if (preg_match('/Bearer\s+(.*)$/i', $authorizationHeader, $matches)) {
+            $secretKey = $matches[1];
+        }
 
-    // Verify the signature against the payload and client secret (fetch the client secret from the database)
-    $clientSecret = $expose->getSecretKeyFromDatabase($clientId); // Implement your logic to fetch the client secret from the database
+        if ($secretKey) {
+            // Retrieve the client ID and signature from the secret key
+            list($clientId, $signature) = explode(':', $secretKey);
 
-    $payload = json_encode(array(
-        "amount" => $data["amount"],
-        "callback_url" => $callback_url,
-        "customer_number" => $data["phone_number"],
-        "exttrid" => $trans_id,
-        "nw" => $data["network"],
-        "reference" => "RMU Forms Online",
-        "service_id" => getenv('ORCHARD_SERVID'),
-        "trans_type" => "CTM",
-        "ts" => date("Y-m-d H:i:s")
-    ));
+            // Verify the signature against the payload and client secret (fetch the client secret from the database)
+            $clientSecret = $expose->getSecretKeyFromDatabase($clientId); // Implement your logic to fetch the client secret from the database
 
-    $expectedSignature = hash_hmac("sha256", $payload, $clientSecret);
+            $payload = json_encode(array(
+                "amount" => $data["amount"],
+                "callback_url" => $callback_url,
+                "customer_number" => $data["phone_number"],
+                "exttrid" => $trans_id,
+                "nw" => $data["network"],
+                "reference" => "RMU Forms Online",
+                "service_id" => getenv('ORCHARD_SERVID'),
+                "trans_type" => "CTM",
+                "ts" => date("Y-m-d H:i:s")
+            ));
 
-    if ($signature === $expectedSignature) {
+            $expectedSignature = hash_hmac("sha256", $payload, $clientSecret);
 
-        switch ($_SERVER["REQUEST_METHOD"]) {
-            case 'POST':
+            if ($signature === $expectedSignature) {
                 $_POST = json_decode(file_get_contents("php://input"), true);
                 $response = array();
 
@@ -93,28 +93,28 @@ if ($secretKey) {
                             break;
                     }
                 }
-
-                break;
-
-            case 'GET':
-                header("Content-Type: text/html");
-                require_once 'advert.html';
-                break;
-
-            default:
-                header("HTTP/1.1 403 Forbidden");
-                header("Content-Type: text/html");
-                break;
+            } else {
+                // The signature is invalid, send an appropriate response message
+                http_response_code(401); // Unauthorized
+                echo json_encode(array("message" => "Invalid signature"));
+                exit;
+            }
+        } else {
+            // The authorization header is missing or invalid, send an appropriate response message
+            http_response_code(401); // Unauthorized
+            echo json_encode(array("message" => "Authorization required"));
+            exit;
         }
-    } else {
-        // The signature is invalid, send an appropriate response message
-        http_response_code(401); // Unauthorized
-        echo json_encode(array("message" => "Invalid signature"));
-        exit;
-    }
-} else {
-    // The authorization header is missing or invalid, send an appropriate response message
-    http_response_code(401); // Unauthorized
-    echo json_encode(array("message" => "Authorization required"));
-    exit;
+
+        break;
+
+    case 'GET':
+        header("Content-Type: text/html");
+        require_once 'advert.html';
+        break;
+
+    default:
+        header("HTTP/1.1 403 Forbidden");
+        header("Content-Type: text/html");
+        break;
 }
