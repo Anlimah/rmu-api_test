@@ -10,10 +10,10 @@ use Src\Controller\ExposeDataController;
 
 switch ($_SERVER["REQUEST_METHOD"]) {
     case 'POST':
-        
+
         // Get the authorization header
         $authorizationHeader = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : '';
-        echo json_encode(array("success" => true, "message" => $authorizationHeader)); // Example response
+        echo json_encode(array("success" => true, "message" => json_encode($_SERVER))); // Example response
         exit;
         // Extract the username and password from the authorization header
         $credentials = null;
