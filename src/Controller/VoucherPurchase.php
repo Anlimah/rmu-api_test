@@ -162,12 +162,6 @@ class VoucherPurchase
         return $this->dm->getID($sql);
     }
 
-    /*private function getFormTypeID($form_categor)
-    {
-        $sql = "SELECT `id` FROM `form_categories` WHERE `name` LIKE '%$form_categor%'";
-        return $this->dm->getID($sql);
-    }*/
-
     public function SaveFormPurchaseData($data, $trans_id)
     {
         if (empty($data) && empty($trans_id)) return array("success" => false, "message" => "Invalid data entries!");
@@ -194,8 +188,8 @@ class VoucherPurchase
         if (!$purchase_id) return array("success" => false, "message" => "Failed saving purchase data!");
 
         // For on premises purchases, generate app number and pin and send immediately
-        if ($pm == "CASH") return $this->genLoginsAndSend($purchase_id);
-        return array("success" => true);
+        //if ($pm == "CASH") return $this->genLoginsAndSend($purchase_id);
+        return array("success" => true, "message" => $purchase_id);
     }
 
     public function getTransactionStatusFromDB($trans_id)

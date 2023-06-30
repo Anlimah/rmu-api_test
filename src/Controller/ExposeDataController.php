@@ -198,7 +198,7 @@ class ExposeDataController
         return $this->dm->getData("SELECT * FROM `forms` WHERE `id` = :fi", array(":fi" => $form_id));
     }
 
-    public function getFormPriceB($form_name)
+    public function getFormDetailsByFormName($form_name)
     {
         return $this->dm->getData("SELECT * FROM `forms` WHERE `name` = :fn", array(":fn" => $form_name));
     }
@@ -297,8 +297,10 @@ class ExposeDataController
         $this->dm->inputData($query, $params);
     }
 
-    public function getSecretKeyFromDatabase($client_id)
+    public function activityLogger($request, $route, $api_user)
     {
-        return $this->dm->getID("SELECT * FROM `api_users` WHERE client_id=:c", array(':c' => $client_id));
+        $query = "INSERT INTO `api_activity_logs` (`request`, `route`, `api_user`) VALUES(:r, :t, :u)";
+        $params = array(":r" => $request, ":t" => $route, ":u" => $api_user);
+        $this->dm->inputData($query, $params);
     }
 }

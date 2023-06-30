@@ -1,12 +1,10 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+/*ini_set('display_errors', 1);
+error_reporting(E_ALL);*/
 
 require_once('bootstrap.php');
 
-use Src\Controller\USSDHandler;
-use Src\Controller\PaymentController;
-use Src\Controller\ExposeDataController;
+use Src\Controller\APIEndpointHandler;
 
 switch ($_SERVER["REQUEST_METHOD"]) {
     case 'POST':
@@ -15,38 +13,57 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         $authUsername = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : '';
         $authPassword = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : '';
 
-        echo json_encode(array("success" => true, "message" => $_SERVER['PHP_AUTH_USER'] . ":" . $_SERVER['PHP_AUTH_PW'])); // Example response
-        exit;
-        // Extract the username and password from the authorization header
-        $credentials = null;
-        if (preg_match('/Basic\s+(.*)$/i', $authorizationHeader, $matches)) {
-            $credentials = base64_decode($matches[1]);
-        }
+        if ($authUsername && $authPassword) {
 
-        if ($credentials) {
-            // Extract the username and password from the credentials
-            list($username, $password) = explode(':', $credentials);
+            $expose = new APIEndpointHandler();
+            $user = $expose->verifyAPIAccess($authUsername, $authPassword);
 
-            // Validate the username and password (fetch the expected username and password from the database)
-            $expectedUsername = "Francis"; // Implement your logic to fetch the expected username from the database
-            $expectedPassword = "Anlimah"; // Implement your logic to fetch the expected password from the database
-
-            if ($username === $expectedUsername && $password === $expectedPassword) {
+            if ($user) {
                 $_POST = json_decode(file_get_contents("php://input"), true);
+                $response = array();
 
+                if (empty($_POST)) {
+                } else {
+                    $request_uri = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
+                    $endpoint = '/' . basename($request_uri);
+
+                    switch ($variable) {
+                        case 'forms':
+                            $response = $expose->getForms();
+                            break;
+
+                        case 'buy':
+                            $response = $expose->handleAPIBuyForms($_POST, $user);
+                            break;
+
+                        case 'status':
+                            $response = "";
+                            break;
+
+                        default:
+                            # code...
+                            break;
+                    }
+                }
                 // Continue with the rest of your code here
                 header("Content-Type: application/json");
                 http_response_code(201);
-                echo json_encode(array("success" => true, "message" => "Authorized")); // Example response
+                echo json_encode($response); // Example response
                 exit;
-            } else {
+            }
+
+            //
+            else {
                 // The username or password is invalid, send an appropriate response message
                 http_response_code(401); // Unauthorized
                 header('WWW-Authenticate: Basic realm="API Authentication"');
                 echo json_encode(array("message" => "Invalid credentials"));
                 exit;
             }
-        } else {
+        }
+
+        //
+        else {
             // The authorization header is missing or invalid, send an appropriate response message
             http_response_code(401); // Unauthorized
             header('WWW-Authenticate: Basic realm="API Authentication"');
