@@ -12,8 +12,10 @@ switch ($_SERVER["REQUEST_METHOD"]) {
     case 'POST':
 
         // Get the authorization header
-        $authorizationHeader = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : '';
-        echo json_encode(array("success" => true, "message" => $authorizationHeader)); // Example response
+        $authUsername = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : '';
+        $authPassword = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : '';
+
+        echo json_encode(array("success" => true, "message" => $_SERVER['PHP_AUTH_USER'] . ":" . $_SERVER['PHP_AUTH_PW'])); // Example response
         exit;
         // Extract the username and password from the authorization header
         $credentials = null;
