@@ -23,6 +23,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
                 $response = array();
 
                 if (empty($_POST)) {
+                    $response = array("success" => false, "message" => "Request parameters not passed");
                 } else {
                     $request_uri = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
                     $endpoint = '/' . basename($request_uri);
@@ -37,7 +38,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
                             break;
 
                         case 'status':
-                            $response = "";
+                            $response = $expose->transactionStatus($_POST, $user);
                             break;
 
                         default:

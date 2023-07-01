@@ -257,4 +257,12 @@ class VoucherPurchase
             return array("success" => false, "message" => "Failed saving login details!");
         }
     }
+
+    public function getApplicantLoginInfoByTransID($trans_id)
+    {
+        $sql = "SELECT pd.`app_number`, pd.`pin_number` 
+                FROM `purchase_detail` AS pd, applicant_logins AS al 
+                WHERE pd.`id` = :t AND al.`purchase_id` = pd.`id`";
+        return $this->dm->getData($sql, array(':t' => $trans_id));
+    }
 }

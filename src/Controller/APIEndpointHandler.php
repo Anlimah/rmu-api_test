@@ -4,18 +4,17 @@ namespace Src\Controller;
 
 use Src\Controller\ExposeDataController;
 use Src\Controller\VoucherPurchase;
+use Src\System\DatabaseMethods;
 
 class APIEndpointHandler
 {
     private $expose         = null;
     private $dm             = null;
 
-    private $payload        = array();
-    private $payData        = array();
-
     public function __construct()
     {
         $this->expose = new ExposeDataController();
+        $this->dm = new DatabaseMethods();
     }
 
     public function run()
@@ -23,16 +22,23 @@ class APIEndpointHandler
         return false;
     }
 
-    // API endpoints access
     public function verifyAPIAccess($username, $password)
     {
-        $query = "SELECT * FROM `api_users` WHERE `username`=:u AND `password`=:p";
-        return $this->dm->getData($query, array(':u' => $username, ':p' => $password));
+        $sql = "SELECT * FROM `api_users` WHERE `username`=:u";
+        $data = $this->dm->getData($sql, array(':u' => sha1($username)));
+        if (!empty($data)) if (password_verify($password, $data[0]["password"])) return $data;
+        return 0;
     }
 
     public function getForms()
     {
         return $this->dm->getData("SELECT `name` AS form, `amount` AS price FROM `forms`");
+    }
+
+    public function getTransactionStatusByExtransID($externalTransID)
+    {
+        $query = "SELECT `app_number`, `pin_number` FROM `purchase_detail` WHERE `ext_trans_id` = :t";
+        return $this->dm->getData($query, array(':t' => $externalTransID));
     }
 
     public function verifyRequestData($data): bool
@@ -69,7 +75,6 @@ class APIEndpointHandler
 
     public function handleAPIBuyForms($payload, $api_user)
     {
-        //ALTER TABLE purchase_detail ADD COLUMN ext_request_id VARCHAR(200) AFTER sold_at;
         if (!$this->verifyRequestData($payload)) return array("success" => false, "message" => "Request parameters not complete");
         if (!$this->validateRequestData($payload)) return array("success" => false, "message" => "Request parameters have invalid data");
 
@@ -78,7 +83,7 @@ class APIEndpointHandler
 
         $data['first_name'] = $payload["customer_first_name"];
         $data['last_name'] = $payload["customer_last_name"];
-        $data['email_address'] = "";
+        $data['email_address'] = isset($payload["customer_email_address"]) ? $payload["customer_email_address"] : "";
         $data['country_name'] = "Ghana";
         $data['country_code'] = "+233";
         $data['amount'] = $formInfo["amount"];
@@ -94,6 +99,21 @@ class APIEndpointHandler
         $this->expose->activityLogger(json_encode($data), "vendor", $api_user);
         if ($saved["success"]) $loginGenrated = $voucher->genLoginsAndSend($saved["message"]);
         $this->expose->activityLogger(json_encode($saved), "system", $api_user);
-        if ($loginGenrated["success"]) $response = array("success" => "true", "message" => "Successfull", "ext_trans_id" => $data["ext_trans_id"]);
+        if ($loginGenrated["success"]) $response = array("success" => true, "message" => "Successfull");
+        $response["data"] = $voucher->getApplicantLoginInfoByTransID($loginGenrated["exttrid"]);
+        return $response;
+    }
+
+    public function transactionStatus($data, $api_user)
+    {
+        if (!isset($data['ext_trans_id']) || empty($data['ext_trans_id']))
+            return array("success" => false, "message" => "Request parameters not complete");
+        if (!$this->expose->validateInputTextNumber($data["ext_trans_id"]))
+            return array("success" => false, "message" => "Request parameters have invalid data");
+
+        $status = $this->getTransactionStatusByExtransID($data["ext_trans_id"]);
+        if (empty($status)) return array("success" => false, "message" => "No transaction matched this transaction ID");
+        $this->expose->activityLogger(json_encode($status), "vendor", $api_user);
+        return array("success" => true, "message" => "Successfull", "data" => $status);
     }
 }
