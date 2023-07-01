@@ -22,30 +22,33 @@ switch ($_SERVER["REQUEST_METHOD"]) {
                 $_POST = json_decode(file_get_contents("php://input"), true);
                 $response = array();
 
-                if (empty($_POST)) {
-                    $response = array("success" => false, "message" => "Request parameters not passed");
-                } else {
-                    $request_uri = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
-                    $endpoint = '/' . basename($request_uri);
+                $request_uri = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
+                $endpoint = '/' . basename($request_uri);
 
-                    switch ($variable) {
-                        case 'forms':
-                            $response = $expose->getForms();
-                            break;
+                switch ($endpoint) {
+                    case '/forms':
+                        $response = $expose->getForms();
+                        break;
 
-                        case 'buy':
+                    case '/buy':
+                        if (empty($_POST))
+                            $response = array("success" => false, "message" => "Request parameters not passed");
+                        else
                             $response = $expose->handleAPIBuyForms($_POST, $user);
-                            break;
+                        break;
 
-                        case 'status':
+                    case '/status':
+                        if (empty($_POST))
+                            $response = array("success" => false, "message" => "Request parameters not passed");
+                        else
                             $response = $expose->transactionStatus($_POST, $user);
-                            break;
+                        break;
 
-                        default:
-                            # code...
-                            break;
-                    }
+                    default:
+                        # code...
+                        break;
                 }
+
                 // Continue with the rest of your code here
                 header("Content-Type: application/json");
                 http_response_code(201);

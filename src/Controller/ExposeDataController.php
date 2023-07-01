@@ -167,7 +167,6 @@ class ExposeDataController
 
     public function getCurrentAdmissionPeriodID()
     {
-        //return $this->dm->getData("SELECT * FROM `admission_period` WHERE `active` = 1 OR deadline <> NOW()");
         return $this->dm->getID("SELECT `id` FROM `admission_period` WHERE `active` = 1");
     }
 
@@ -290,17 +289,10 @@ class ExposeDataController
         return $this->dm->getID($str, array(':i' => $vendor_id));
     }
 
-    public function requestLogger($request)
-    {
-        $query = "INSERT INTO `ussd_request_logs` (`request`) VALUES(:nc)";
-        $params = array(":nc" => $request);
-        $this->dm->inputData($query, $params);
-    }
-
     public function activityLogger($request, $route, $api_user)
     {
-        $query = "INSERT INTO `api_activity_logs` (`request`, `route`, `api_user`) VALUES(:r, :t, :u)";
+        $query = "INSERT INTO `api_request_logs` (`request`, `route`, `api_user`) VALUES(:r, :t, :u)";
         $params = array(":r" => $request, ":t" => $route, ":u" => $api_user);
-        $this->dm->inputData($query, $params);
+        return $this->dm->inputData($query, $params);
     }
 }

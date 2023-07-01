@@ -26,7 +26,7 @@ class APIEndpointHandler
     {
         $sql = "SELECT * FROM `api_users` WHERE `username`=:u";
         $data = $this->dm->getData($sql, array(':u' => sha1($username)));
-        if (!empty($data)) if (password_verify($password, $data[0]["password"])) return $data;
+        if (!empty($data)) if (password_verify($password, $data[0]["password"])) return $data[0]["id"];
         return 0;
     }
 
@@ -43,7 +43,7 @@ class APIEndpointHandler
 
     public function verifyRequestData($data): bool
     {
-        if (!isset($data["company_name"]) || empty($data["company_name"])) return false;
+        if (!isset($data["branch"]) || empty($data["branch"])) return false;
         if (!isset($data["form_type"]) || empty($data["form_type"])) return false;
         if (!isset($data["customer_first_name"]) || empty($data["customer_first_name"])) return false;
         if (!isset($data["customer_last_name"]) || empty($data["customer_last_name"])) return false;
@@ -55,7 +55,7 @@ class APIEndpointHandler
 
     public function validateRequestData($data): bool
     {
-        if (!$this->expose->validateInput($data["company_name"])) return false;
+        if (!$this->expose->validateInput($data["branch"])) return false;
         if (!$this->expose->validateInputTextOnly($data["form_type"])) return false;
         if (!$this->expose->validateInput($data["customer_first_name"])) return false;
         if (!$this->expose->validateInput($data["customer_last_name"])) return false;
@@ -69,8 +69,8 @@ class APIEndpointHandler
 
     public function getVendorIdByAPIUser($api_user)
     {
-        $str = "SELECT `id` FROM `vendor_details` WHERE `api_user`=:a";
-        return $this->dm->getID($str, array(':a' => $api_user));
+        $query = "SELECT `id` FROM `vendor_details` WHERE `api_user`=:a";
+        return $this->dm->getID($query, array(':a' => $api_user));
     }
 
     public function handleAPIBuyForms($payload, $api_user)
@@ -86,6 +86,7 @@ class APIEndpointHandler
         $data['email_address'] = isset($payload["customer_email_address"]) ? $payload["customer_email_address"] : "";
         $data['country_name'] = "Ghana";
         $data['country_code'] = "+233";
+        $data['phone_number'] = $payload["customer_phone_number"];
         $data['amount'] = $formInfo["amount"];
         $data['form_id'] = $formInfo["id"];
         $data['vendor_id'] = $vendor_id;
@@ -100,7 +101,7 @@ class APIEndpointHandler
         if ($saved["success"]) $loginGenrated = $voucher->genLoginsAndSend($saved["message"]);
         $this->expose->activityLogger(json_encode($saved), "system", $api_user);
         if ($loginGenrated["success"]) $response = array("success" => true, "message" => "Successfull");
-        $response["data"] = $voucher->getApplicantLoginInfoByTransID($loginGenrated["exttrid"]);
+        $response["data"] = $voucher->getApplicantLoginInfoByTransID($loginGenrated["exttrid"])[0];
         return $response;
     }
 
@@ -113,7 +114,8 @@ class APIEndpointHandler
 
         $status = $this->getTransactionStatusByExtransID($data["ext_trans_id"]);
         if (empty($status)) return array("success" => false, "message" => "No transaction matched this transaction ID");
+
         $this->expose->activityLogger(json_encode($status), "vendor", $api_user);
-        return array("success" => true, "message" => "Successfull", "data" => $status);
+        return array("success" => true, "message" => "Successfull", "data" => $status[0]);
     }
 }
