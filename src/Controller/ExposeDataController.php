@@ -223,7 +223,7 @@ class ExposeDataController
     public function getOtherForms()
     {
         return $this->dm->getData("SELECT f.* FROM `forms` AS f, `form_categories` AS fc 
-        WHERE f.form_category = fc.id AND fc.name IN ('UNDERGRADUATE', 'POSTGRADUATE')");
+        WHERE f.form_category = fc.id AND fc.name NOT IN ('UNDERGRADUATE', 'POSTGRADUATE')");
     }
 
     public function sendHubtelSMS($url, $payload)
