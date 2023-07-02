@@ -37,7 +37,7 @@ class APIEndpointHandler
 
     public function getTransactionStatusByExtransID($externalTransID)
     {
-        $query = "SELECT `status` FROM `purchase_detail` WHERE `ext_trans_id` = :t";
+        $query = "SELECT `status`, `ext_trans_id` FROM `purchase_detail` WHERE `ext_trans_id` = :t";
         return $this->dm->getData($query, array(':t' => $externalTransID));
     }
 
