@@ -43,7 +43,8 @@ class APIEndpointHandler
 
     public function getPurchaseInfoByExtransID($externalTransID)
     {
-        $query = "SELECT `app_number`, `pin_number`, `ext_trans_id`  FROM `purchase_detail` WHERE `ext_trans_id` = :t";
+        $query = "SELECT CONCAT('RMU-', `app_number`) AS app_number, `pin_number`, `ext_trans_id`  
+                FROM `purchase_detail` WHERE `ext_trans_id` = :t";
         return $this->dm->getData($query, array(':t' => $externalTransID));
     }
 
@@ -93,6 +94,7 @@ class APIEndpointHandler
         $data['country_name'] = "Ghana";
         $data['country_code'] = "+233";
         $data['phone_number'] = $payload["customer_phone_number"];
+        $data['ext_trans_id'] = $payload["ext_trans_id"];
         $data['amount'] = $formInfo["amount"];
         $data['form_id'] = $formInfo["id"];
         $data['vendor_id'] = $vendor_id;
@@ -104,11 +106,12 @@ class APIEndpointHandler
         $voucher = new VoucherPurchase();
         $saved = $voucher->SaveFormPurchaseData($data, $trans_id);
         $this->expose->activityLogger(json_encode($data), "vendor", $api_user);
+
         if ($saved["success"]) $loginGenrated = $voucher->genLoginsAndSend($saved["message"]);
         $this->expose->activityLogger(json_encode($saved), "system", $api_user);
+
         if ($loginGenrated["success"]) $response = array("success" => true, "message" => "Successfull");
         $loginData = $voucher->getApplicantLoginInfoByTransID($loginGenrated["exttrid"])[0];
-        $loginData["app_number"] = "RMU-" . $loginData["app_number"];
         $response["data"] = $loginData;
         return $response;
     }
@@ -138,7 +141,6 @@ class APIEndpointHandler
         if (empty($purchaseInfo)) return array("success" => false, "message" => "No transaction matched this transaction ID");
 
         $this->expose->activityLogger(json_encode($purchaseInfo[0]), "vendor", $api_user);
-        $purchaseInfo[0]["app_number"] = "RMU-" . $purchaseInfo[0]["app_number"];
         return array("success" => true, "message" => "Successfull", "data" => $purchaseInfo[0]);
     }
 }

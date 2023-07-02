@@ -45,13 +45,13 @@ class VoucherPurchase
         return 0;
     }
 
-    private function saveVendorPurchaseData(int $ti, int $vd, int $fi, int $ap, $pm, float $am, $fn, $ln, $em, $cn, $cc, $pn)
+    private function saveVendorPurchaseData(int $ti, $et, int $vd, int $fi, int $ap, $pm, float $am, $fn, $ln, $em, $cn, $cc, $pn)
     {
-        $sql = "INSERT INTO `purchase_detail` (`id`, `vendor`, `form_id`, `admission_period`, `payment_method`, `first_name`, `last_name`, `email_address`, `country_name`, `country_code`, `phone_number`, `amount`) 
-                VALUES(:ti, :vd, :fi, :ap, :pm, :fn, :ln, :em, :cn, :cc, :pn, :am)";
+        $sql = "INSERT INTO `purchase_detail` (`id`, `ext_trans_id`, `vendor`, `form_id`, `admission_period`, `payment_method`, `first_name`, `last_name`, `email_address`, `country_name`, `country_code`, `phone_number`, `amount`) 
+                VALUES(:ti, :et, :vd, :fi, :ap, :pm, :fn, :ln, :em, :cn, :cc, :pn, :am)";
         $params = array(
-            ':ti' => $ti, ':vd' => $vd, ':fi' => $fi, ':pm' => $pm, ':ap' => $ap, ':fn' => $fn, ':ln' => $ln,
-            ':em' => $em, ':cn' => $cn, ':cc' => $cc, ':pn' => $pn, ':am' => $am
+            ':ti' => $ti, ':et' => $et, ':vd' => $vd, ':fi' => $fi, ':pm' => $pm, ':ap' => $ap,
+            ':fn' => $fn, ':ln' => $ln, ':em' => $em, ':cn' => $cn, ':cc' => $cc, ':pn' => $pn, ':am' => $am
         );
         if ($this->dm->inputData($sql, $params)) return $ti;
         return 0;
@@ -172,6 +172,7 @@ class VoucherPurchase
         $cn = $data['country_name'];
         $cc = $data['country_code'];
         $pn = $data['phone_number'];
+        $et = $data['ext_trans_id'];
         $am = $data['amount'];
         $fi = $data['form_id'];
         $vd = $data['vendor_id'];
@@ -184,7 +185,7 @@ class VoucherPurchase
         $ap_id = $data['admin_period'];
         //$ft_id = $this->getFormTypeID($ft);
 
-        $purchase_id = $this->saveVendorPurchaseData($trans_id, $vd, $fi, $ap_id, $pm, $am, $fn, $ln, $em, $cn, $cc, $pn);
+        $purchase_id = $this->saveVendorPurchaseData($trans_id, $et, $vd, $fi, $ap_id, $pm, $am, $fn, $ln, $em, $cn, $cc, $pn);
         if (!$purchase_id) return array("success" => false, "message" => "Failed saving purchase data!");
 
         // For on premises purchases, generate app number and pin and send immediately
@@ -242,7 +243,7 @@ class VoucherPurchase
 
             $message = 'Your RMU Online Application login details. ';
             $message .= 'APPLICATION NUMBER: RMU-' . $login_details['app_number'];
-            $message .= '    PIN: ' . $login_details['pin_number'] . ".";
+            $message .= '  PIN: ' . $login_details['pin_number'] . ".";
             $message .= ' Follow the link, https://admissions.rmuictonline.com to start application process.';
             $to = $data[0]["country_code"] . $data[0]["phone_number"];
 
@@ -260,9 +261,8 @@ class VoucherPurchase
 
     public function getApplicantLoginInfoByTransID($trans_id)
     {
-        $sql = "SELECT pd.`app_number`, pd.`pin_number`, `ext_trans_id` 
-                FROM `purchase_detail` AS pd, applicants_login AS al 
-                WHERE pd.`id` = :t AND al.`purchase_id` = pd.`id`";
+        $sql = "SELECT CONCAT('RMU-', `app_number`) AS app_number, `pin_number`, `ext_trans_id` 
+                FROM `purchase_detail` WHERE `id` = :t";
         return $this->dm->getData($sql, array(':t' => $trans_id));
     }
 }
