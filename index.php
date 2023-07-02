@@ -27,7 +27,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 
                 switch ($endpoint) {
                     case '/getForms':
-                        $response = $expose->getForms();
+                        $response = $expose->getForms($user);
                         break;
 
                     case '/purchaseForm':
