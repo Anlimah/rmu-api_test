@@ -63,12 +63,12 @@ class APIEndpointHandler
     public function validateRequestData($data): bool
     {
         if (!$this->expose->validateInput($data["branch"])) return false;
-        if (!$this->expose->validateInputTextOnly($data["form_type"])) return false;
+        if (!$this->expose->validateText($data["form_type"])) return false;
         if (!$this->expose->validateInput($data["customer_first_name"])) return false;
         if (!$this->expose->validateInput($data["customer_last_name"])) return false;
         if (!$this->expose->validateInput($data["customer_phone_number"])) return false;
-        if (!$this->expose->validateInputTextNumber($data["ext_trans_id"])) return false;
-        if (!$this->expose->validateDate($data["trans_dt"])) return false;
+        if (!$this->expose->validateInput($data["ext_trans_id"])) return false;
+        if (!$this->expose->validateDateTime($data["trans_dt"])) return false;
         if (isset($data["customer_email_address"]) && !empty($data["customer_email_address"]))
             if (!$this->expose->validateEmail($data["customer_email_address"])) return false;
         return true;
@@ -120,7 +120,7 @@ class APIEndpointHandler
     {
         if (!isset($data['ext_trans_id']) || empty($data['ext_trans_id']))
             return array("success" => false, "message" => "Request parameters not complete");
-        if (!$this->expose->validateInputTextNumber($data["ext_trans_id"]))
+        if (!$this->expose->validateInput($data["ext_trans_id"]))
             return array("success" => false, "message" => "Request parameters have invalid data");
 
         $status = $this->getTransactionStatusByExtransID($data["ext_trans_id"]);
@@ -134,7 +134,7 @@ class APIEndpointHandler
     {
         if (!isset($payload['ext_trans_id']) || empty($payload['ext_trans_id']))
             return array("success" => false, "message" => "Request parameters not complete");
-        if (!$this->expose->validateInputTextNumber($payload["ext_trans_id"]))
+        if (!$this->expose->validateInput($payload["ext_trans_id"]))
             return array("success" => false, "message" => "Request parameters have invalid data");
 
         $purchaseInfo = $this->getPurchaseInfoByExtransID($payload["ext_trans_id"]);
