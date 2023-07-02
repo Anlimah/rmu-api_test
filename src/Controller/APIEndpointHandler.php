@@ -119,14 +119,14 @@ class APIEndpointHandler
     public function purchaseStatus($data, $api_user)
     {
         if (!isset($data['ext_trans_id']) || empty($data['ext_trans_id']))
-            return array("success" => false, "message" => "Request parameters not complete");
+            return array("success" => false, "message" => "Request parameters not complete.");
         if (!$this->expose->validateInput($data["ext_trans_id"]))
-            return array("success" => false, "message" => "Request parameters have invalid data");
+            return array("success" => false, "message" => "Request parameters have invalid data.");
 
         $status = $this->getTransactionStatusByExtransID($data["ext_trans_id"]);
-        if (empty($status)) return array("success" => false, "message" => "No transaction matched this transaction ID");
+        if (empty($status)) return array("success" => false, "message" => "No record matched this transaction ID.");
 
-        $this->expose->activityLogger(json_encode($status), "vendor", $api_user);
+        $this->expose->activityLogger(json_encode($status[0]), "vendor", $api_user);
         return array("success" => true, "message" => "Successfull", "data" => $status[0]);
     }
 
