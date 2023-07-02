@@ -38,88 +38,76 @@ class VoucherPurchase
 
     private function doesCodeExists($code)
     {
-        $sql = "SELECT `id` FROM `applicants_login` WHERE `app_number`=:p";
-        if ($this->dm->getID($sql, array(':p' => sha1($code)))) {
-            return 1;
-        }
+        $query = "SELECT `id` FROM `applicants_login` WHERE `app_number`=:p";
+        if ($this->dm->getID($query, array(':p' => sha1($code)))) return 1;
         return 0;
     }
 
-    private function saveVendorPurchaseData(int $ti, $et, int $vd, int $fi, int $ap, $pm, float $am, $fn, $ln, $em, $cn, $cc, $pn)
+    private function saveVendorPurchaseData(int $ti, $et, $br, int $vd, int $fi, int $ap, $pm, float $am, $fn, $ln, $em, $cn, $cc, $pn)
     {
-        $sql = "INSERT INTO `purchase_detail` (`id`, `ext_trans_id`, `vendor`, `form_id`, `admission_period`, `payment_method`, `first_name`, `last_name`, `email_address`, `country_name`, `country_code`, `phone_number`, `amount`) 
-                VALUES(:ti, :et, :vd, :fi, :ap, :pm, :fn, :ln, :em, :cn, :cc, :pn, :am)";
+        $query = "INSERT INTO `purchase_detail` (`id`, `ext_trans_id`, `sold_by`, `vendor`, `form_id`, `admission_period`, `payment_method`, `first_name`, `last_name`, `email_address`, `country_name`, `country_code`, `phone_number`, `amount`) 
+                VALUES(:ti, :et, :br, :vd, :fi, :ap, :pm, :fn, :ln, :em, :cn, :cc, :pn, :am)";
         $params = array(
-            ':ti' => $ti, ':et' => $et, ':vd' => $vd, ':fi' => $fi, ':pm' => $pm, ':ap' => $ap,
+            ':ti' => $ti, ':et' => $et, ':br' => $br, ':vd' => $vd, ':fi' => $fi, ':pm' => $pm, ':ap' => $ap,
             ':fn' => $fn, ':ln' => $ln, ':em' => $em, ':cn' => $cn, ':cc' => $cc, ':pn' => $pn, ':am' => $am
         );
-        if ($this->dm->inputData($sql, $params)) return $ti;
+        if ($this->dm->inputData($query, $params)) return $ti;
         return 0;
     }
 
     private function updateVendorPurchaseData(int $trans_id, int $app_number, $pin_number, $status)
     {
-        $sql = "UPDATE `purchase_detail` SET `app_number`= :a,`pin_number`= :p, `status` = :s WHERE `id` = :t";
-        return $this->dm->getData($sql, array(':a' => $app_number, ':p' => $pin_number, ':s' => $status, ':t' => $trans_id));
+        $query = "UPDATE `purchase_detail` SET `app_number`= :a,`pin_number`= :p, `status` = :s WHERE `id` = :t";
+        return $this->dm->getData($query, array(':a' => $app_number, ':p' => $pin_number, ':s' => $status, ':t' => $trans_id));
     }
 
     private function registerApplicantPersI($user_id)
     {
-        $sql = "INSERT INTO `personal_information` (`app_login`) VALUES(:a)";
-        $this->dm->inputData($sql, array(':a' => $user_id));
-    }
-
-    private function registerApplicantAcaB($user_id)
-    {
-        $sql = "INSERT INTO `academic_background` (`app_login`) VALUES(:a)";
-        $this->dm->inputData($sql, array(':a' => $user_id));
+        $query = "INSERT INTO `personal_information` (`app_login`) VALUES(:a)";
+        $this->dm->inputData($query, array(':a' => $user_id));
     }
 
     private function registerApplicantProgI($user_id)
     {
-        $sql = "INSERT INTO `program_info` (`app_login`) VALUES(:a)";
-        $this->dm->inputData($sql, array(':a' => $user_id));
+        $query = "INSERT INTO `program_info` (`app_login`) VALUES(:a)";
+        $this->dm->inputData($query, array(':a' => $user_id));
     }
 
     private function registerApplicantPreUni($user_id)
     {
-        $sql = "INSERT INTO `previous_uni_records` (`app_login`) VALUES(:a)";
-        $this->dm->inputData($sql, array(':a' => $user_id));
+        $query = "INSERT INTO `previous_uni_records` (`app_login`) VALUES(:a)";
+        $this->dm->inputData($query, array(':a' => $user_id));
     }
 
     private function setFormSectionsChecks($user_id)
     {
-        $sql = "INSERT INTO `form_sections_chek` (`app_login`) VALUES(:a)";
-        $this->dm->inputData($sql, array(':a' => $user_id));
+        $query = "INSERT INTO `form_sections_chek` (`app_login`) VALUES(:a)";
+        $this->dm->inputData($query, array(':a' => $user_id));
     }
 
     private function setHeardAboutUs($user_id)
     {
-        $sql = "INSERT INTO `heard_about_us` (`app_login`) VALUES(:a)";
-        $this->dm->inputData($sql, array(':a' => $user_id));
+        $query = "INSERT INTO `heard_about_us` (`app_login`) VALUES(:a)";
+        $this->dm->inputData($query, array(':a' => $user_id));
     }
 
     private function getApplicantLoginID($app_number)
     {
-        $sql = "SELECT `id` FROM `applicants_login` WHERE `app_number` = :a;";
-        return $this->dm->getID($sql, array(':a' => sha1($app_number)));
+        $query = "SELECT `id` FROM `applicants_login` WHERE `app_number` = :a;";
+        return $this->dm->getID($query, array(':a' => sha1($app_number)));
     }
 
-    private function saveLoginDetails($app_number, $pin, $who)
+    private function createApplicantUser($app_number, $pin, $who)
     {
         $hashed_pin = password_hash($pin, PASSWORD_DEFAULT);
-        $sql = "INSERT INTO `applicants_login` (`app_number`, `pin`, `purchase_id`) VALUES(:a, :p, :b)";
+        $query = "INSERT INTO `applicants_login` (`app_number`, `pin`, `purchase_id`) VALUES(:a, :p, :b)";
         $params = array(':a' => sha1($app_number), ':p' => $hashed_pin, ':b' => $who);
 
-        if ($this->dm->inputData($sql, $params)) {
+        if ($this->dm->inputData($query, $params)) {
             $user_id = $this->getApplicantLoginID($app_number);
 
             //register in Personal information table in db
             $this->registerApplicantPersI($user_id);
-
-            //register in Acaedmic backgorund
-            // Removed this education background because data will be bulk saved and also user can add more than 1
-            //$this->registerApplicantAcaB($user_id);
 
             //register in Programs information
             $this->registerApplicantProgI($user_id);
@@ -156,12 +144,6 @@ class VoucherPurchase
         return $this->dm->getData("SELECT vendor FROM purchase_detail WHERE id = :i", array(":i" => $trans_id));
     }
 
-    private function getAdmissionPeriodID()
-    {
-        $sql = "SELECT `id` FROM `admission_period` WHERE `active` = 1;";
-        return $this->dm->getID($sql);
-    }
-
     public function SaveFormPurchaseData($data, $trans_id)
     {
         if (empty($data) && empty($trans_id)) return array("success" => false, "message" => "Invalid data entries!");
@@ -176,65 +158,60 @@ class VoucherPurchase
         $am = $data['amount'];
         $fi = $data['form_id'];
         $vd = $data['vendor_id'];
+        $br = $data['branch'];
 
         if ($data['pay_method'] == 'MOM') $pay_method = "MOMO";
         else if ($data['pay_method'] == 'CRD') $pay_method = "CARD";
         else $pay_method = $data['pay_method'];
+
         $pm = $pay_method;
-
         $ap_id = $data['admin_period'];
-        //$ft_id = $this->getFormTypeID($ft);
 
-        $purchase_id = $this->saveVendorPurchaseData($trans_id, $et, $vd, $fi, $ap_id, $pm, $am, $fn, $ln, $em, $cn, $cc, $pn);
+        $purchase_id = $this->saveVendorPurchaseData($trans_id, $et, $br, $vd, $fi, $ap_id, $pm, $am, $fn, $ln, $em, $cn, $cc, $pn);
         if (!$purchase_id) return array("success" => false, "message" => "Failed saving purchase data!");
 
-        // For on premises purchases, generate app number and pin and send immediately
-        //if ($pm == "CASH") return $this->genLoginsAndSend($purchase_id);
         return array("success" => true, "message" => $purchase_id);
     }
 
     public function getTransactionStatusFromDB($trans_id)
     {
-        $sql = "SELECT `id`, `status` FROM `purchase_detail` WHERE `id` = :t";
-        return $this->dm->getData($sql, array(':t' => $trans_id));
+        $query = "SELECT `id`, `status` FROM `purchase_detail` WHERE `id` = :t";
+        return $this->dm->getData($query, array(':t' => $trans_id));
     }
 
     public function updateTransactionStatusInDB($status, $trans_id)
     {
-        $sql = "UPDATE `purchase_detail` SET `status` = :s WHERE `id` = :t";
-        return $this->dm->getData($sql, array(':s' => $status, ':t' => $trans_id));
+        $query = "UPDATE `purchase_detail` SET `status` = :s WHERE `id` = :t";
+        return $this->dm->getData($query, array(':s' => $status, ':t' => $trans_id));
     }
 
     private function getAppPurchaseData(int $trans_id)
     {
-        // get form_category, country code, phone number
-        $sql = "SELECT f.`form_category`, pd.`country_code`, pd.`phone_number`, pd.`email_address` 
+        $query = "SELECT f.`form_category`, pd.`country_code`, pd.`phone_number`, pd.`email_address` 
                 FROM `purchase_detail` AS pd, forms AS f WHERE pd.`id` = :t AND f.`id` = pd.`form_id`";
-        return $this->dm->getData($sql, array(':t' => $trans_id));
+        return $this->dm->getData($query, array(':t' => $trans_id));
     }
 
     public function genLoginsAndSend(int $trans_id)
     {
-        $data = $this->getAppPurchaseData($trans_id);
+        $dataArray = $this->getAppPurchaseData($trans_id);
 
-        if (empty($data)) return array("success" => false, "message" => "No data records for this transaction!");
+        if (empty($dataArray)) return array("success" => false, "message" => "No data records for this transaction!");
 
+        $data = $dataArray[0];
         $app_type = 0;
 
-        if ($data[0]["form_category"] >= 2) {
-            $app_type = 1;
-        } else if ($data[0]["form_category"] == 1) {
-            $app_type = 2;
-        }
+        if ($data["form_category"] >= 2) $app_type = 1;
+        else if ($data["form_category"] == 1) $app_type = 2;
 
         $app_year = $this->expose->getAdminYearCode();
-
         $login_details = $this->genLoginDetails($app_type, $app_year);
 
-        if ($this->saveLoginDetails($login_details['app_number'], $login_details['pin_number'], $trans_id)) {
+        if ($this->createApplicantUser($login_details['app_number'], $login_details['pin_number'], $trans_id)) {
 
             $this->updateVendorPurchaseData($trans_id, $login_details['app_number'], $login_details['pin_number'], 'COMPLETED');
             $vendor_id = $this->getVendorIDByTransactionID($trans_id);
+
             $this->logActivity(
                 $vendor_id[0]["vendor"],
                 "INSERT",
@@ -245,24 +222,19 @@ class VoucherPurchase
             $message .= 'APPLICATION NUMBER: RMU-' . $login_details['app_number'];
             $message .= '  PIN: ' . $login_details['pin_number'] . ".";
             $message .= ' Follow the link, https://admissions.rmuictonline.com to start application process.';
-            $to = $data[0]["country_code"] . $data[0]["phone_number"];
+            $to = $data["country_code"] . $data["phone_number"];
 
-            $response = json_decode($this->expose->sendSMS($to, $message));
-
-            if (!$response->status) {
-                return array("success" => true, "exttrid" => $trans_id);
-            } else {
-                return array("success" => false, "message" => "Failed sending login details via SMS!");
-            }
+            $this->expose->sendSMS($to, $message);
+            return array("success" => true, "transID" => $trans_id);
         } else {
-            return array("success" => false, "message" => "Failed saving login details!");
+            return array("success" => false, "message" => "Internal server error: failed to save login details!");
         }
     }
 
     public function getApplicantLoginInfoByTransID($trans_id)
     {
-        $sql = "SELECT CONCAT('RMU-', `app_number`) AS app_number, `pin_number`, `ext_trans_id` 
+        $query = "SELECT CONCAT('RMU-', `app_number`) AS app_number, `pin_number`, `ext_trans_id` 
                 FROM `purchase_detail` WHERE `id` = :t";
-        return $this->dm->getData($sql, array(':t' => $trans_id));
+        return $this->dm->getData($query, array(':t' => $trans_id));
     }
 }

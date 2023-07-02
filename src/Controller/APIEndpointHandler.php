@@ -95,24 +95,23 @@ class APIEndpointHandler
         if (!empty($this->verifyExternalTransID($payload["ext_trans_id"])))
             return array("success" => false, "message" => "Purchase or transaction ID already taken");
 
-        $vendor_id = $this->getVendorIdByAPIUser($api_user);
         $formInfo = $this->expose->getFormDetailsByFormName($payload["form_type"])[0];
 
-        $data['first_name'] = $payload["customer_first_name"];
-        $data['last_name'] = $payload["customer_last_name"];
-        $data['email_address'] = isset($payload["customer_email_address"]) ? $payload["customer_email_address"] : "";
-        $data['country_name'] = "Ghana";
-        $data['country_code'] = "+233";
-        $data['phone_number'] = $payload["customer_phone_number"];
-        $data['ext_trans_id'] = $payload["ext_trans_id"];
-        $data['amount'] = $formInfo["amount"];
-        $data['form_id'] = $formInfo["id"];
-        $data['vendor_id'] = $vendor_id;
-        $data['pay_method'] = "CASH";
-        $trans_id = time();
-        $data['admin_period'] = $this->expose->getCurrentAdmissionPeriodID();
+        $data['first_name']     = $payload["customer_first_name"];
+        $data['last_name']      = $payload["customer_last_name"];
+        $data['email_address']  = isset($payload["customer_email_address"]) ? $payload["customer_email_address"] : "";
+        $data['country_name']   = "Ghana";
+        $data['country_code']   = "+233";
+        $data['phone_number']   = $payload["customer_phone_number"];
+        $data['branch']         = $payload["branch"];
+        $data['ext_trans_id']   = $payload["ext_trans_id"];
+        $data['amount']         = $formInfo["amount"];
+        $data['form_id']        = $formInfo["id"];
+        $data['vendor_id']      = $this->getVendorIdByAPIUser($api_user);
+        $data['pay_method']     = "CASH";
+        $trans_id               = time();
+        $data['admin_period']   = $this->expose->getCurrentAdmissionPeriodID();
 
-        //save Data to database
         $voucher = new VoucherPurchase();
         $saved = $voucher->SaveFormPurchaseData($data, $trans_id);
         $this->expose->activityLogger(json_encode($data), "{$payload['ext_trans_id']} - SaveFormPurchaseData", $api_user);
@@ -121,7 +120,7 @@ class APIEndpointHandler
         $this->expose->activityLogger(json_encode($saved), "{$payload['ext_trans_id']} - genLoginsAndSend", $api_user);
 
         if ($loginGenrated["success"]) $response = array("success" => true, "message" => "Successfull");
-        $loginData = $voucher->getApplicantLoginInfoByTransID($loginGenrated["exttrid"])[0];
+        $loginData = $voucher->getApplicantLoginInfoByTransID($loginGenrated["transID"])[0];
         $this->expose->activityLogger(json_encode($loginData), "{$payload['ext_trans_id']} - getApplicantLoginInfoByTransID", $api_user);
 
         $response["data"] = $loginData;
