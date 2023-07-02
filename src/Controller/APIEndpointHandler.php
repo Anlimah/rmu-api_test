@@ -82,9 +82,11 @@ class APIEndpointHandler
         return $this->dm->getID($query, array(':a' => $api_user));
     }
 
-    private function verifyExternalTransID($externalTransID)
+    private function verifyExternalTransID($externalTransID, $api_user)
     {
-        return $this->getPurchaseStatusByExtransID($externalTransID);
+        $query = "SELECT pd.`id` FROM `purchase_detail` AS pd, vendor_details AS vd 
+        WHERE pd.`ext_trans_id` = :t AND vd.`api_user` = :a AND pd.`vendor` = vd.`id`";
+        return $this->dm->getID($query, array(':t' => $externalTransID, ':a' => $api_user));
     }
 
     public function handleAPIBuyForms($payload, $api_user)
@@ -92,7 +94,7 @@ class APIEndpointHandler
         if (!$this->verifyRequestData($payload)) return array("success" => false, "message" => "Request parameters not complete");
         if (!$this->validateRequestData($payload)) return array("success" => false, "message" => "Request parameters have invalid data");
 
-        if (!empty($this->verifyExternalTransID($payload["ext_trans_id"])))
+        if (!empty($this->verifyExternalTransID($payload["ext_trans_id"], $api_user)))
             return array("success" => false, "message" => "Purchase or transaction ID already taken");
 
         $formInfo = $this->expose->getFormDetailsByFormName($payload["form_type"])[0];
