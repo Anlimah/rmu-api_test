@@ -33,7 +33,7 @@ class APIEndpointHandler
     public function getForms($api_user)
     {
         $data = $this->dm->getData("SELECT `name` AS form, `amount` AS price FROM `forms`");
-        $this->expose->activityLogger(json_encode($data), "vendor", $api_user);
+        $this->expose->activityLogger(json_encode($data), "vendor - getForms", $api_user);
         return $data;
     }
 
@@ -114,7 +114,7 @@ class APIEndpointHandler
 
         if ($loginGenrated["success"]) $response = array("success" => true, "message" => "Successfull");
         $loginData = $voucher->getApplicantLoginInfoByTransID($loginGenrated["exttrid"])[0];
-        $this->expose->activityLogger(json_encode($loginData), "{$payload['ext_trans_id']} - genLoginsAndSend", $api_user);
+        $this->expose->activityLogger(json_encode($loginData), "{$payload['ext_trans_id']} - getApplicantLoginInfoByTransID", $api_user);
 
         $response["data"] = $loginData;
         return $response;
