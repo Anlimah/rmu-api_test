@@ -37,7 +37,13 @@ class APIEndpointHandler
 
     public function getTransactionStatusByExtransID($externalTransID)
     {
-        $query = "SELECT `app_number`, `pin_number` FROM `purchase_detail` WHERE `ext_trans_id` = :t";
+        $query = "SELECT `status` FROM `purchase_detail` WHERE `ext_trans_id` = :t";
+        return $this->dm->getData($query, array(':t' => $externalTransID));
+    }
+
+    public function getPurchaseInfoByExtransID($externalTransID)
+    {
+        $query = "SELECT `app_number`, `pin_number`, `ext_trans_id`  FROM `purchase_detail` WHERE `ext_trans_id` = :t";
         return $this->dm->getData($query, array(':t' => $externalTransID));
     }
 
@@ -79,7 +85,7 @@ class APIEndpointHandler
         if (!$this->validateRequestData($payload)) return array("success" => false, "message" => "Request parameters have invalid data");
 
         $vendor_id = $this->getVendorIdByAPIUser($api_user);
-        $formInfo = $this->expose->getFormDetailsByFormName($payload["form_type"]);
+        $formInfo = $this->expose->getFormDetailsByFormName($payload["form_type"])[0];
 
         $data['first_name'] = $payload["customer_first_name"];
         $data['last_name'] = $payload["customer_last_name"];
@@ -101,11 +107,13 @@ class APIEndpointHandler
         if ($saved["success"]) $loginGenrated = $voucher->genLoginsAndSend($saved["message"]);
         $this->expose->activityLogger(json_encode($saved), "system", $api_user);
         if ($loginGenrated["success"]) $response = array("success" => true, "message" => "Successfull");
-        $response["data"] = $voucher->getApplicantLoginInfoByTransID($loginGenrated["exttrid"])[0];
+        $loginData = $voucher->getApplicantLoginInfoByTransID($loginGenrated["exttrid"])[0];
+        $loginData["app_number"] = "RMU-" . $loginData["app_number"];
+        $response["data"] = $loginData;
         return $response;
     }
 
-    public function transactionStatus($data, $api_user)
+    public function purchaseStatus($data, $api_user)
     {
         if (!isset($data['ext_trans_id']) || empty($data['ext_trans_id']))
             return array("success" => false, "message" => "Request parameters not complete");
@@ -117,5 +125,20 @@ class APIEndpointHandler
 
         $this->expose->activityLogger(json_encode($status), "vendor", $api_user);
         return array("success" => true, "message" => "Successfull", "data" => $status[0]);
+    }
+
+    public function purchaseInfo($payload, $api_user)
+    {
+        if (!isset($payload['ext_trans_id']) || empty($payload['ext_trans_id']))
+            return array("success" => false, "message" => "Request parameters not complete");
+        if (!$this->expose->validateInputTextNumber($payload["ext_trans_id"]))
+            return array("success" => false, "message" => "Request parameters have invalid data");
+
+        $purchaseInfo = $this->getPurchaseInfoByExtransID($payload["ext_trans_id"]);
+        if (empty($purchaseInfo)) return array("success" => false, "message" => "No transaction matched this transaction ID");
+
+        $this->expose->activityLogger(json_encode($purchaseInfo[0]), "vendor", $api_user);
+        $purchaseInfo[0]["app_number"] = "RMU-" . $purchaseInfo[0]["app_number"];
+        return array("success" => true, "message" => "Successfull", "data" => $purchaseInfo[0]);
     }
 }

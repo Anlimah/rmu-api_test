@@ -237,7 +237,7 @@ class VoucherPurchase
             $this->logActivity(
                 $vendor_id[0]["vendor"],
                 "INSERT",
-                "Vendor {$vendor_id} sold form with transaction ID {$trans_id}"
+                "Vendor {$vendor_id[0]["vendor"]} sold form with transaction ID {$trans_id}"
             );
 
             $message = 'Your RMU Online Application login details. ';
@@ -260,8 +260,8 @@ class VoucherPurchase
 
     public function getApplicantLoginInfoByTransID($trans_id)
     {
-        $sql = "SELECT pd.`app_number`, pd.`pin_number` 
-                FROM `purchase_detail` AS pd, applicant_logins AS al 
+        $sql = "SELECT pd.`app_number`, pd.`pin_number`, `ext_trans_id` 
+                FROM `purchase_detail` AS pd, applicants_login AS al 
                 WHERE pd.`id` = :t AND al.`purchase_id` = pd.`id`";
         return $this->dm->getData($sql, array(':t' => $trans_id));
     }

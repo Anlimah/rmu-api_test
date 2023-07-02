@@ -26,22 +26,29 @@ switch ($_SERVER["REQUEST_METHOD"]) {
                 $endpoint = '/' . basename($request_uri);
 
                 switch ($endpoint) {
-                    case '/forms':
+                    case '/getForms':
                         $response = $expose->getForms();
                         break;
 
-                    case '/buy':
+                    case '/purchaseForm':
                         if (empty($_POST))
                             $response = array("success" => false, "message" => "Request parameters not passed");
                         else
                             $response = $expose->handleAPIBuyForms($_POST, $user);
                         break;
 
-                    case '/status':
+                    case '/purchaseStatus':
                         if (empty($_POST))
                             $response = array("success" => false, "message" => "Request parameters not passed");
                         else
-                            $response = $expose->transactionStatus($_POST, $user);
+                            $response = $expose->purchaseStatus($_POST, $user);
+                        break;
+
+                    case '/purchaseInfo':
+                        if (empty($_POST))
+                            $response = array("success" => false, "message" => "Request parameters not passed");
+                        else
+                            $response = $expose->purchaseInfo($_POST, $user);
                         break;
 
                     default:
