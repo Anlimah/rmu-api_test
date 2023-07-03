@@ -43,13 +43,13 @@ class VoucherPurchase
         return 0;
     }
 
-    private function saveVendorPurchaseData(int $ti, $et, $br, int $vd, int $fi, int $ap, $pm, float $am, $fn, $ln, $em, $cn, $cc, $pn)
+    private function saveVendorPurchaseData(int $ti, $et, $br, int $vd, int $fi, int $ap, $pm, float $am, $fn, $ln, $em, $cn, $cc, $pn, $td)
     {
-        $query = "INSERT INTO `purchase_detail` (`id`, `ext_trans_id`, `sold_by`, `vendor`, `form_id`, `admission_period`, `payment_method`, `first_name`, `last_name`, `email_address`, `country_name`, `country_code`, `phone_number`, `amount`) 
-                VALUES(:ti, :et, :br, :vd, :fi, :ap, :pm, :fn, :ln, :em, :cn, :cc, :pn, :am)";
+        $query = "INSERT INTO `purchase_detail` (`id`, `ext_trans_id`, `sold_by`, `vendor`, `form_id`, `admission_period`, `payment_method`, `first_name`, `last_name`, `email_address`, `country_name`, `country_code`, `phone_number`, `amount`, `ext_trans_datetime`) 
+                VALUES(:ti, :et, :br, :vd, :fi, :ap, :pm, :fn, :ln, :em, :cn, :cc, :pn, :am, :td)";
         $params = array(
             ':ti' => $ti, ':et' => $et, ':br' => $br, ':vd' => $vd, ':fi' => $fi, ':pm' => $pm, ':ap' => $ap,
-            ':fn' => $fn, ':ln' => $ln, ':em' => $em, ':cn' => $cn, ':cc' => $cc, ':pn' => $pn, ':am' => $am
+            ':fn' => $fn, ':ln' => $ln, ':em' => $em, ':cn' => $cn, ':cc' => $cc, ':pn' => $pn, ':am' => $am, ':td' => $td
         );
         if ($this->dm->inputData($query, $params)) return $ti;
         return 0;
@@ -159,6 +159,7 @@ class VoucherPurchase
         $fi = $data['form_id'];
         $vd = $data['vendor_id'];
         $br = $data['branch'];
+        $td = $data["ext_trans_dt"];
 
         if ($data['pay_method'] == 'MOM') $pay_method = "MOMO";
         else if ($data['pay_method'] == 'CRD') $pay_method = "CARD";
@@ -167,7 +168,7 @@ class VoucherPurchase
         $pm = $pay_method;
         $ap_id = $data['admin_period'];
 
-        $purchase_id = $this->saveVendorPurchaseData($trans_id, $et, $br, $vd, $fi, $ap_id, $pm, $am, $fn, $ln, $em, $cn, $cc, $pn);
+        $purchase_id = $this->saveVendorPurchaseData($trans_id, $et, $br, $vd, $fi, $ap_id, $pm, $am, $fn, $ln, $em, $cn, $cc, $pn, $td);
         if (!$purchase_id) return array("success" => false, "message" => "Failed saving purchase data!");
 
         return array("success" => true, "message" => $purchase_id);

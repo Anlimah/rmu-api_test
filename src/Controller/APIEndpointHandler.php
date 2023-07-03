@@ -39,7 +39,7 @@ class APIEndpointHandler
 
     public function getPurchaseStatusByExtransID($externalTransID)
     {
-        $query = "SELECT `status`, `ext_trans_id` FROM `purchase_detail` WHERE `ext_trans_id` = :t";
+        $query = "SELECT `status`, `ext_trans_id`, `ext_trans_datetime` AS trans_dt FROM `purchase_detail` WHERE `ext_trans_id` = :t";
         return $this->dm->getData($query, array(':t' => $externalTransID));
     }
 
@@ -99,16 +99,17 @@ class APIEndpointHandler
 
         $formInfo = $this->expose->getFormDetailsByFormName($payload["form_type"])[0];
 
+        $data['branch']         = $payload["branch"];
         $data['first_name']     = $payload["customer_first_name"];
         $data['last_name']      = $payload["customer_last_name"];
+        $data['phone_number']   = $payload["customer_phone_number"];
+        $data['ext_trans_id']   = $payload["ext_trans_id"];
+        $data["ext_trans_dt"]   = $payload["trans_dt"];
+        $data['form_id']        = $formInfo["id"];
         $data['email_address']  = isset($payload["customer_email_address"]) ? $payload["customer_email_address"] : "";
         $data['country_name']   = "Ghana";
         $data['country_code']   = "+233";
-        $data['phone_number']   = $payload["customer_phone_number"];
-        $data['branch']         = $payload["branch"];
-        $data['ext_trans_id']   = $payload["ext_trans_id"];
         $data['amount']         = $formInfo["amount"];
-        $data['form_id']        = $formInfo["id"];
         $data['vendor_id']      = $this->getVendorIdByAPIUser($api_user);
         $data['pay_method']     = "CASH";
         $trans_id               = time();
