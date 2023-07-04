@@ -42,6 +42,15 @@ class ExposeDataController
         return false;
     }
 
+    public function validateName($input): bool
+    {
+        if (empty($input)) return false;
+        $user_input = htmlentities(htmlspecialchars($input));
+        $validated_input = (bool) preg_match("/^[\p{L}'\s.-]+$/u", $user_input);
+        if ($validated_input) return true;
+        return false;
+    }
+
     public function validateCountryCode($input)
     {
         if (empty($input)) return false;
@@ -60,12 +69,12 @@ class ExposeDataController
         return false;
     }
 
-    public function validatePhone($input)
+    public function validatePhone($input): bool
     {
         if (empty($input)) return false;
         $user_input = htmlentities(htmlspecialchars($input));
         $validated_input = (bool) preg_match('/^[0-9]/', $user_input);
-        if ($validated_input) return $user_input;
+        if ($validated_input) return true;
         return false;
     }
 
@@ -73,7 +82,7 @@ class ExposeDataController
     {
         if (empty($input)) return false;
         $user_input = htmlentities(htmlspecialchars($input));
-        $validated_input = (bool) preg_match('/^[A-Za-z]/', $user_input);
+        $validated_input = (bool) preg_match('/^[A-Za-z]+$/', $user_input);
         if ($validated_input) return $user_input;
         return false;
     }
@@ -85,10 +94,11 @@ class ExposeDataController
         if (checkdate($month, $day, $year)) return $date;
     }
 
-    public function validateDateTime($date, $format = 'Y-m-d H:i:s')
+    public function validateDateTime($input, $format = 'Y-m-d H:i:s')
     {
-        $d = DateTime::createFromFormat($format, $date);
-        return $d && $d->format($format) == $date;
+        if (empty($input)) return false;
+        $d = DateTime::createFromFormat($format, $input);
+        return $d && $d->format($format) == $input;
     }
 
     public function getCurrentAdmissionPeriodID()
@@ -170,43 +180,10 @@ class ExposeDataController
         return $this->sendHubtelSMS($url, $payload);
     }
 
-    public function sendOTP($to)
-    {
-        $otp_code = $this->genCode(4);
-        $message = 'Your OTP verification code: ' . $otp_code;
-        $response = json_decode($this->sendSMS($to, $message), true);
-        if (!$response["status"]) $response["otp_code"] = $otp_code;
-        return $response;
-    }
-
     public function getVendorPhone($vendor_id)
     {
         $sql = "SELECT `country_code`, `phone_number` FROM `vendor_details` WHERE `id`=:i";
         return $this->dm->getData($sql, array(':i' => $vendor_id));
-    }
-
-    /**
-     * @param int transaction_id //transaction_id
-     */
-    public function callOrchardGateway($data)
-    {
-        $payConfirm = new PaymentController();
-        return $payConfirm->orchardPaymentControllerB($data);
-    }
-
-    /**
-     * @param int transaction_id //transaction_id
-     */
-    public function confirmPurchase(int $transaction_id)
-    {
-        $payConfirm = new PaymentController();
-        return $payConfirm->processTransaction($transaction_id);
-    }
-
-    public function processVendorPay($data)
-    {
-        $payConfirm = new PaymentController();
-        return $payConfirm->vendorPaymentProcess($data);
     }
 
     public function vendorExist($vendor_id)
@@ -215,10 +192,50 @@ class ExposeDataController
         return $this->dm->getID($str, array(':i' => $vendor_id));
     }
 
+    //
     public function activityLogger($request, $route, $api_user)
     {
         $query = "INSERT INTO `api_request_logs` (`request`, `route`, `api_user`) VALUES(:r, :t, :u)";
         $params = array(":r" => $request, ":t" => $route, ":u" => $api_user);
         return $this->dm->inputData($query, $params);
+    }
+
+    public function verifyAPIAccess($username, $password): int
+    {
+        $sql = "SELECT * FROM `api_users` WHERE `username`=:u";
+        $data = $this->dm->getData($sql, array(':u' => sha1($username)));
+        if (!empty($data)) if (password_verify($password, $data[0]["password"])) return (int) $data[0]["id"];
+        return 0;
+    }
+
+    public function getAllAvaialbleForms()
+    {
+        return $this->dm->getData("SELECT `name` AS form, `amount` AS price FROM `forms`");
+    }
+
+    public function getPurchaseStatusByExtransID($externalTransID)
+    {
+        $query = "SELECT `status`, `ext_trans_id`, `ext_trans_datetime` AS trans_dt FROM `purchase_detail` WHERE `ext_trans_id` = :t";
+        return $this->dm->getData($query, array(':t' => $externalTransID));
+    }
+
+    public function getPurchaseInfoByExtransID($externalTransID)
+    {
+        $query = "SELECT CONCAT('RMU-', `app_number`) AS app_number, `pin_number`, `ext_trans_id`  
+                FROM `purchase_detail` WHERE `ext_trans_id` = :t";
+        return $this->dm->getData($query, array(':t' => $externalTransID));
+    }
+
+    public function getVendorIdByAPIUser($api_user): mixed
+    {
+        $query = "SELECT `id` FROM `vendor_details` WHERE `api_user`=:a";
+        return $this->dm->getID($query, array(':a' => $api_user));
+    }
+
+    public function verifyExternalTransID($externalTransID, $api_user)
+    {
+        $query = "SELECT pd.`id` FROM `purchase_detail` AS pd, vendor_details AS vd 
+        WHERE pd.`ext_trans_id` = :t AND vd.`api_user` = :a AND pd.`vendor` = vd.`id`";
+        return $this->dm->getID($query, array(':t' => $externalTransID, ':a' => $api_user));
     }
 }

@@ -4,55 +4,36 @@ namespace Src\Controller;
 
 use Src\Controller\ExposeDataController;
 use Src\Controller\VoucherPurchase;
-use Src\System\DatabaseMethods;
 
 class APIEndpointHandler
 {
     private $expose         = null;
-    private $dm             = null;
 
     public function __construct()
     {
         $this->expose = new ExposeDataController();
-        $this->dm = new DatabaseMethods();
     }
 
-    public function run()
+    public function authenticateAccess($username, $password)
     {
+        return $this->expose->verifyAPIAccess($username, $password);
+    }
+
+    public function verifyRequestParam($param, $value): bool
+    {
+        if (isset($param[$value]) && !empty($param[$value])) return true;
         return false;
     }
 
-    public function verifyAPIAccess($username, $password)
+    public function validateRequestParam($validateFunction, $param, $value): bool
     {
-        $sql = "SELECT * FROM `api_users` WHERE `username`=:u";
-        $data = $this->dm->getData($sql, array(':u' => sha1($username)));
-        if (!empty($data)) if (password_verify($password, $data[0]["password"])) return $data[0]["id"];
-        return 0;
-    }
-
-    public function getForms($api_user)
-    {
-        $data = $this->dm->getData("SELECT `name` AS form, `amount` AS price FROM `forms`");
-        $this->expose->activityLogger(json_encode($data), "vendor - getForms", $api_user);
-        return $data;
-    }
-
-    public function getPurchaseStatusByExtransID($externalTransID)
-    {
-        $query = "SELECT `status`, `ext_trans_id`, `ext_trans_datetime` AS trans_dt FROM `purchase_detail` WHERE `ext_trans_id` = :t";
-        return $this->dm->getData($query, array(':t' => $externalTransID));
-    }
-
-    public function getPurchaseInfoByExtransID($externalTransID)
-    {
-        $query = "SELECT CONCAT('RMU-', `app_number`) AS app_number, `pin_number`, `ext_trans_id`  
-                FROM `purchase_detail` WHERE `ext_trans_id` = :t";
-        return $this->dm->getData($query, array(':t' => $externalTransID));
+        if ($this->expose->$validateFunction($param[$value])) return true;
+        return false;
     }
 
     public function verifyRequestData($data): bool
     {
-        if (!isset($data["branch"]) || empty($data["branch"])) return false;
+        if (!isset($data["branch_name"]) || empty($data["branch_name"])) return false;
         if (!isset($data["form_type"]) || empty($data["form_type"])) return false;
         if (!isset($data["customer_first_name"]) || empty($data["customer_first_name"])) return false;
         if (!isset($data["customer_last_name"]) || empty($data["customer_last_name"])) return false;
@@ -64,11 +45,11 @@ class APIEndpointHandler
 
     public function validateRequestData($data): bool
     {
-        if (!$this->expose->validateInput($data["branch"])) return false;
+        if (!$this->expose->validateInput($data["branch_name"])) return false;
         if (!$this->expose->validateText($data["form_type"])) return false;
-        if (!$this->expose->validateInput($data["customer_first_name"])) return false;
-        if (!$this->expose->validateInput($data["customer_last_name"])) return false;
-        if (!$this->expose->validateInput($data["customer_phone_number"])) return false;
+        if (!$this->expose->validateName($data["customer_first_name"])) return false;
+        if (!$this->expose->validateName($data["customer_last_name"])) return false;
+        if (!$this->expose->validatePhone($data["customer_phone_number"])) return false;
         if (!$this->expose->validateInput($data["ext_trans_id"])) return false;
         if (!$this->expose->validateDateTime($data["trans_dt"])) return false;
         if (isset($data["customer_email_address"]) && !empty($data["customer_email_address"]))
@@ -76,30 +57,106 @@ class APIEndpointHandler
         return true;
     }
 
-    public function getVendorIdByAPIUser($api_user)
+    public function getForms($payload, $api_user): mixed
     {
-        $query = "SELECT `id` FROM `vendor_details` WHERE `api_user`=:a";
-        return $this->dm->getID($query, array(':a' => $api_user));
+        if (empty($payload)) return array("resp_code" => "701", "message" => "Request body has no parameters.");
+
+        if (!$this->verifyRequestParam($payload, "branch_name"))
+            return array("resp_code" => "704", "message" => "Missing branch name in request body parameters.");
+        if (!$this->validateRequestParam("validateInput", $payload, "branch_name"))
+            return array("resp_code" => "705", "message" => "Invalid branch name in request body parameters.");
+
+        $data = $this->expose->getAllAvaialbleForms();
+        $this->expose->activityLogger(json_encode($data), $payload["branch_name"] . " - getForms", $api_user);
+
+        if (empty($data)) return array("resp_code" => "801", "message" => "No record found for this form type.");
+        return array("resp_code" => "001", "message" => "successfull", "data" => $data);
     }
 
-    private function verifyExternalTransID($externalTransID, $api_user)
+    public function purchaseStatus($payload, $api_user): mixed
     {
-        $query = "SELECT pd.`id` FROM `purchase_detail` AS pd, vendor_details AS vd 
-        WHERE pd.`ext_trans_id` = :t AND vd.`api_user` = :a AND pd.`vendor` = vd.`id`";
-        return $this->dm->getID($query, array(':t' => $externalTransID, ':a' => $api_user));
+        if (empty($payload)) return array("resp_code" => "701", "message" => "Request body has no parameters.");
+
+        if (!$this->verifyRequestParam($payload, "ext_trans_id"))
+            return array("resp_code" => "702", "message" => "Missing external transaction ID (ext_trans_id) in request body parameters.");
+        if (!$this->validateRequestParam("validateInput", $payload, "ext_trans_id"))
+            return array("resp_code" => "703", "message" => "Invalid external transaction ID (ext_trans_id) in request body parameters.");
+
+        $status = $this->expose->getPurchaseStatusByExtransID($payload["ext_trans_id"]);
+        if (empty($status)) return array("resp_code" => "802", "message" => "No transaction record matched this transaction ID.");
+
+        $this->expose->activityLogger(json_encode($status[0]), "{$payload['ext_trans_id']} - getPurchaseStatusByExtransID", $api_user);
+        return array("resp_code" => "001", "message" => "Successfull", "data" => $status[0]);
     }
 
-    public function handleAPIBuyForms($payload, $api_user)
+    public function purchaseInfo($payload, $api_user): mixed
     {
-        if (!$this->verifyRequestData($payload)) return array("success" => false, "message" => "Request parameters not complete");
-        if (!$this->validateRequestData($payload)) return array("success" => false, "message" => "Request parameters have invalid data");
+        if (empty($payload)) return array("resp_code" => "701", "message" => "Request body has no parameters.");
 
-        if (!empty($this->verifyExternalTransID($payload["ext_trans_id"], $api_user)))
-            return array("success" => false, "message" => "Purchase or transaction ID already taken");
+        if (!$this->verifyRequestParam($payload, "ext_trans_id"))
+            return array("resp_code" => "702", "message" => "Missing external transaction ID (ext_trans_id) in request body parameters.");
+        if (!$this->validateRequestParam("validateInput", $payload, "ext_trans_id"))
+            return array("resp_code" => "703", "message" => "Invalid external transaction ID (ext_trans_id) in request body parameters.");
+
+        $purchaseInfo = $this->expose->getPurchaseInfoByExtransID($payload["ext_trans_id"]);
+        $this->expose->activityLogger(json_encode($purchaseInfo), "{$payload['ext_trans_id']} - getPurchaseInfoByExtransID", $api_user);
+
+        if (empty($purchaseInfo)) return array("resp_code" => "802", "message" => "No transaction record matched this transaction ID.");
+        return array("resp_code" => "001", "message" => "Successfull", "data" => $purchaseInfo[0]);
+    }
+
+    public function handleAPIBuyForms($payload, $api_user): mixed
+    {
+        if (empty($payload)) return array("resp_code" => "701", "message" => "Request body has no parameters.");
+
+        if (!$this->verifyRequestParam($payload, "ext_trans_id"))
+            return array("resp_code" => "702", "message" => "Missing external transaction ID (ext_trans_id) in request body parameters.");
+        if (!$this->validateRequestParam("validateInput", $payload, "ext_trans_id"))
+            return array("resp_code" => "703", "message" => "Invalid external transaction ID (ext_trans_id) in request body parameters.");
+
+        if (!$this->verifyRequestParam($payload, "branch_name"))
+            return array("resp_code" => "704", "message" => "Missing branch name in request body parameters.");
+        if (!$this->validateRequestParam("validateInput", $payload, "branch_name"))
+            return array("resp_code" => "705", "message" => "Invalid branch name in request body parameters.");
+
+        if (!$this->verifyRequestParam($payload, "form_type"))
+            return array("resp_code" => "706", "message" => "Missing form type in request body parameters.");
+        if (!$this->validateRequestParam("validateText", $payload, "form_type"))
+            return array("resp_code" => "707", "message" => "Invalid form type in request body parameters.");
+
+        if (!$this->verifyRequestParam($payload, "customer_first_name"))
+            return array("resp_code" => "702", "message" => "Missing customer first name in request body parameters.");
+        if (!$this->validateRequestParam("validateName", $payload, "customer_first_name"))
+            return array("resp_code" => "708", "message" => "Invalid customer first name in request body parameters.");
+
+        if (!$this->verifyRequestParam($payload, "customer_last_name"))
+            return array("resp_code" => "709", "message" => "Missing customer last name in request body parameters.");
+        if (!$this->validateRequestParam("validateName", $payload, "customer_last_name"))
+            return array("resp_code" => "710", "message" => "Invalid customer last name in request body parameters.");
+
+        if (isset($payload["customer_email_address"])) {
+            if (!$this->verifyRequestParam($payload, "customer_email_address"))
+                return array("resp_code" => "711", "message" => "Missing customer email address in request body parameters.");
+            if (!$this->validateRequestParam("validateEmail", $payload, "customer_email_address"))
+                return array("resp_code" => "712", "message" => "Invalid customer email address in request body parameters.");
+        }
+
+        if (!$this->verifyRequestParam($payload, "customer_phone_number"))
+            return array("resp_code" => "713", "message" => "Missing customer phone number in request body parameters.");
+        if (!$this->validateRequestParam("validatePhone", $payload, "customer_phone_number"))
+            return array("resp_code" => "714", "message" => "Invalid customer phone number in request body parameters.");
+
+        if (!$this->verifyRequestParam($payload, "trans_dt"))
+            return array("resp_code" => "715", "message" => "Missing transaction datetime in request body parameters.");
+        if (!$this->validateRequestParam("validateDateTime", $payload, "trans_dt"))
+            return array("resp_code" => "716", "message" => "Invalid transaction datetime in request body parameters.");
+
+        if (!empty($this->expose->verifyExternalTransID($payload["ext_trans_id"], $api_user)))
+            return array("resp_code" => "803", "message" => "Duplicate transaction request.");
 
         $formInfo = $this->expose->getFormDetailsByFormName($payload["form_type"])[0];
 
-        $data['branch']         = $payload["branch"];
+        $data['branch']         = $payload["branch_name"];
         $data['first_name']     = $payload["customer_first_name"];
         $data['last_name']      = $payload["customer_last_name"];
         $data['phone_number']   = $payload["customer_phone_number"];
@@ -110,7 +167,7 @@ class APIEndpointHandler
         $data['country_name']   = "Ghana";
         $data['country_code']   = "+233";
         $data['amount']         = $formInfo["amount"];
-        $data['vendor_id']      = $this->getVendorIdByAPIUser($api_user);
+        $data['vendor_id']      = $this->expose->getVendorIdByAPIUser($api_user);
         $data['pay_method']     = "CASH";
         $trans_id               = time();
         $data['admin_period']   = $this->expose->getCurrentAdmissionPeriodID();
@@ -122,39 +179,11 @@ class APIEndpointHandler
         if ($saved["success"]) $loginGenrated = $voucher->genLoginsAndSend($saved["message"]);
         $this->expose->activityLogger(json_encode($saved), "{$payload['ext_trans_id']} - genLoginsAndSend", $api_user);
 
-        if ($loginGenrated["success"]) $response = array("success" => true, "message" => "Successfull");
+        if ($loginGenrated["success"]) $response = array("resp_code" => "001", "message" => "Successfull");
         $loginData = $voucher->getApplicantLoginInfoByTransID($loginGenrated["transID"])[0];
         $this->expose->activityLogger(json_encode($loginData), "{$payload['ext_trans_id']} - getApplicantLoginInfoByTransID", $api_user);
 
         $response["data"] = $loginData;
         return $response;
-    }
-
-    public function purchaseStatus($payload, $api_user)
-    {
-        if (!isset($payload['ext_trans_id']) || empty($payload['ext_trans_id']))
-            return array("success" => false, "message" => "Request parameters not complete.");
-        if (!$this->expose->validateInput($payload["ext_trans_id"]))
-            return array("success" => false, "message" => "Request parameters have invalid data.");
-
-        $status = $this->getPurchaseStatusByExtransID($payload["ext_trans_id"]);
-        if (empty($status)) return array("success" => false, "message" => "No record matched this transaction ID.");
-
-        $this->expose->activityLogger(json_encode($status[0]), "{$payload['ext_trans_id']} - getPurchaseStatusByExtransID", $api_user);
-        return array("success" => true, "message" => "Successfull", "data" => $status[0]);
-    }
-
-    public function purchaseInfo($payload, $api_user)
-    {
-        if (!isset($payload['ext_trans_id']) || empty($payload['ext_trans_id']))
-            return array("success" => false, "message" => "Request parameters not complete");
-        if (!$this->expose->validateInput($payload["ext_trans_id"]))
-            return array("success" => false, "message" => "Request parameters have invalid data");
-
-        $purchaseInfo = $this->getPurchaseInfoByExtransID($payload["ext_trans_id"]);
-        if (empty($purchaseInfo)) return array("success" => false, "message" => "No transaction matched this transaction ID");
-
-        $this->expose->activityLogger(json_encode($purchaseInfo[0]), "{$payload['ext_trans_id']} - getPurchaseInfoByExtransID", $api_user);
-        return array("success" => true, "message" => "Successfull", "data" => $purchaseInfo[0]);
     }
 }
