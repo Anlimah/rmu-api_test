@@ -6,10 +6,18 @@ use Src\Controller\APIEndpointHandler;
 switch ($_SERVER["REQUEST_METHOD"]) {
     case 'POST':
 
-        // Check Content-Type header
+        // Check if the "CONTENT_TYPE" header is set
+        if (!isset($_SERVER["CONTENT_TYPE"])) {
+            http_response_code(400); // Bad Request
+            header('Content-Type: application/json');
+            echo json_encode(array("resp_code" => "601", "message" => "No Content-Type header provided."));
+            exit;
+        }
+
+        // Check if Content-Type header is set to json
         if ($_SERVER["CONTENT_TYPE"] !== "application/json") {
             http_response_code(415); // Unsupported Media Type
-            echo json_encode(array("resp_code" => "601", "message" => "Only JSON-encoded requests are allowed"));
+            echo json_encode(array("resp_code" => "602", "message" => "Only JSON-encoded requests are allowed."));
             exit;
         }
 
@@ -19,14 +27,14 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         if (empty($authorizationHeader)) {
             http_response_code(400); // Bad Request
             header('Content-Type: application/json');
-            echo json_encode(array("resp_code" => "602", "message" => "No Authorization header information"));
+            echo json_encode(array("resp_code" => "603", "message" => "No Authorization header information."));
             exit;
         }
 
         if (strpos($authorizationHeader, 'Basic') === false) {
             http_response_code(401); // Unauthorized
             header('WWW-Authenticate: Basic realm="API Authentication"');
-            echo json_encode(array("resp_code" => "603", "message" => "Basic Authorization required"));
+            echo json_encode(array("resp_code" => "604", "message" => "Basic Authorization required."));
             exit;
         }
 
@@ -39,7 +47,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             http_response_code(401); // Unauthorized
             header('Content-Type: application/json');
             header('WWW-Authenticate: Basic realm="API Authentication"');
-            echo json_encode(array("resp_code" => "604", "message" => "Authorization credentials required"));
+            echo json_encode(array("resp_code" => "605", "message" => "Authorization credentials required."));
             exit;
         }
 
@@ -49,7 +57,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         if (!$user) {
             http_response_code(401); // Unauthorized
             header('WWW-Authenticate: Basic realm="API Authentication"');
-            echo json_encode(array("resp_code" => "605", "message" => "Invalid authorization credentials"));
+            echo json_encode(array("resp_code" => "606", "message" => "Invalid authorization credentials."));
             exit;
         }
 
@@ -81,7 +89,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
                 break;
 
             default:
-                $response = array("resp_code" => "606", "message" => "Invalid endpoint: $endpoint");
+                $response = array("resp_code" => "607", "message" => "Invalid endpoint: $endpoint");
                 http_response_code(404);
                 break;
         }
