@@ -2,17 +2,628 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RMU Forms API | Documentation</title>
+    <meta name="Keywords" content="RMU, University, Apply, Forms, School, Institution, API">
+    <meta name="Description" content="The Regional Maritime University (RMU), Accra, Ghana, is an international tertiary institution. The overall objective for the establishment of RMU is to promote regional co-operation in the maritime industry focusing on the training to ensure the sustained growth and development of the industry.">
+    <meta property="og:image" content="https://rmu.edu.gh/wp-content/uploads/2019/09/rmulogo-exp-3-400x75.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="400">
+    <meta property="og:image:height" content="75">
+    <meta property="og:description" content="Regional Maritime University (RMU) offers a comprehensive range of diploma and degree programs in Marine Engineering, Nautical Science, Electrical Engineering, Mechanical Engineering, Computer Science, Computer Engineering, Information Technology, Logistics, Port and Shipping Management, and other short courses. Explore our programs and gain expertise in the maritime industry. Join us and unlock your potential in the exciting world of maritime education.">
+    <link href="./assets/images/rmu-logo.png" rel="icon">
+    <link href="./assets/images/rmu-logo.png" rel="apple-touch-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=Roboto+Mono:wght@700&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+    <title>RMU Forms Online</title>
+    <style>
+        a,
+        abbr,
+        acronym,
+        address,
+        applet,
+        article,
+        aside,
+        audio,
+        b,
+        big,
+        blockquote,
+        body,
+        canvas,
+        caption,
+        center,
+        cite,
+        code,
+        dd,
+        del,
+        details,
+        dfn,
+        div,
+        dl,
+        dt,
+        em,
+        embed,
+        fieldset,
+        figcaption,
+        figure,
+        footer,
+        form,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        header,
+        hgroup,
+        html,
+        i,
+        iframe,
+        img,
+        ins,
+        kbd,
+        label,
+        legend,
+        li,
+        main,
+        mark,
+        menu,
+        nav,
+        object,
+        ol,
+        output,
+        p,
+        pre,
+        q,
+        ruby,
+        s,
+        samp,
+        section,
+        small,
+        span,
+        strike,
+        strong,
+        sub,
+        summary,
+        sup,
+        table,
+        tbody,
+        td,
+        tfoot,
+        th,
+        thead,
+        time,
+        tr,
+        tt,
+        u,
+        ul,
+        var,
+        video {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-size: 100%;
+            font-family: inherit;
+            vertical-align: baseline;
+        }
+
+        article,
+        aside,
+        details,
+        figcaption,
+        figure,
+        footer,
+        header,
+        hgroup,
+        main,
+        menu,
+        nav,
+        section {
+            display: block;
+        }
+
+        [hidden] {
+            display: none;
+        }
+
+        *,
+        ::after,
+        ::before {
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        ol,
+        ul {
+            list-style: none;
+        }
+
+        blockquote,
+        q {
+            quotes: none;
+        }
+
+        blockquote:after,
+        blockquote:before,
+        q:after,
+        q:before,
+        p:after,
+        p:before {
+            content: "";
+            content: none;
+        }
+
+        input,
+        select,
+        .photo-upload-area {
+            max-width: 20rem !important;
+            font-size: 14px !important;
+            line-height: 1.5 !important;
+        }
+
+        input,
+        select {
+            padding: 0.40625rem 0.6875rem !important;
+        }
+
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        html {
+            font-size: 18px !important;
+        }
+
+        b,
+        strong {
+            font-weight: 700;
+        }
+
+        .hide {
+            display: none !important;
+        }
+        .display {
+            display: block !important;
+        }
+
+        body,
+        html {
+            height: auto;
+            min-height: 100vh;
+        }
+
+        body {
+            /*was 000*/
+            font-family: "Ubuntu", sans-serif !important;
+            font-weight: 400;
+            -webkit-overflow-scrolling: touch;
+            overflow: auto;
+            line-height: 1.5;
+            background-color: #fff !important;
+            color: #282828 !important;
+            font-size: 16px !important;
+        }
+
+        #wrapper {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        main {
+            width: 100%;
+            height: 100%;
+            margin-top: 50px !important;
+        }
+
+        .fp-header,
+        .fp-footer {
+            width: 100% !important;
+        }
+
+        .fp-header {
+            background-color: #003262 !important;
+            height: 60px !important;
+        }
+
+        .fp-footer {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-self: flex-end !important;
+            align-items: center !important;
+            background-color: #fff !important;
+            margin: 0 !important;
+            position: fixed !important;
+            bottom: 0 !important;
+            text-align: center !important;
+            line-height: 1.2 !important;
+            height: 50px !important;
+        }
+
+        .fp-header > div {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .form-control {
+            padding: 8px !important;
+        }
+
+        a {
+            color: #004d99 !important;
+            line-height: 1.5 !important;
+            text-decoration: none !important;
+        }
+
+        a.active {
+            font-weight: 700 !important;
+        }
+
+        a:hover {
+            font-weight: bolder !important;
+            cursor: pointer !important;
+            text-decoration: underline !important;
+        }
+
+        .flex-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .flex-container > div {
+            height: 100% !important;
+            width: 100% !important;
+        }
+
+        .flex-column {
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        .flex-row {
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        .justify-center {
+            justify-content: center !important;
+        }
+
+        .justify-space-between {
+            justify-content: space-between !important;
+        }
+
+        .align-items-center {
+            align-items: center !important;
+        }
+
+        .align-items-baseline {
+            align-items: baseline !important;
+        }
+
+        .flex-card {
+            display: flex !important;
+            justify-content: center !important;
+            flex-direction: row !important;
+        }
+
+        .form-card {
+            height: 100% !important;
+            max-width: 425px !important;
+            padding: 15px 0px 20px 0px !important;
+        }
+
+        .flex-card > .form-card {
+            height: 100% !important;
+            width: 100% !important;
+        }
+
+        .purchase-card-header {
+            padding: 0 !important;
+            width: 100% !important;
+            height: 40px !important;
+        }
+
+        .purchase-card-header > h1 {
+            font-size: 22px !important;
+            font-weight: 600 !important;
+            color: #003262 !important;
+            text-align: center;
+            width: 100%;
+        }
+
+        .purchase-card-step-info {
+            color: #003262;
+            padding: 0px;
+            font-size: 14px;
+            font-weight: 400;
+            width: 100%;
+        }
+
+        .purchase-card-footer {
+            width: 100% !important;
+        }
+
+        .step-capsule {
+            background-color: #003262;
+            color: #fff;
+            padding: 2px 50px;
+            border-radius: 50px;
+            width: 100%;
+            word-spacing: 3px;
+            text-align: center;
+        }
+
+        .card {
+            box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1), 0 4px 20px 0 rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .form-card > .purchase-card-header {
+            position: relative;
+            top: 0;
+            text-align: center;
+        }
+
+        .form-card > .purchase-card-step-info {
+            position: relative;
+            bottom: 0;
+            text-align: center;
+        }
+
+        .btn-rmu,
+        .bg-rmu {
+            background-color: #003262 !important;
+            color: #fff !important;
+        }
+
+        .btn-group-xs > .btn,
+        .btn-xs {
+            padding: 0.25rem 0.4rem 0.5rem 0.4rem !important;
+            font-size: 0.875rem !important;
+            line-height: 0.5 !important;
+            border-radius: 0.2rem !important;
+        }
+
+        /*
+            top-nav-bar Layout
+        */
+        label {
+            font-size: 16px !important;
+            font-weight: 700 !important;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        label {
+            color: #353535 !important;
+        }
+
+        form {
+            margin: 0px 12% !important;
+        }
+
+        .items {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center;
+            height: inherit;
+        }
+
+        .items > img,
+        .items > span {
+            padding: 2px 7px !important;
+        }
+
+        .rmu-logo-letter {
+            font-family: "Ubuntu", sans-serif;
+            font-size: 40px !important;
+            color: #fff;
+        }
+
+        /* Extra small devices (phones, 600px and down) */
+        @media only screen and (max-width: 375px) {
+            body {
+                overflow: none;
+            }
+            .form-control {
+                width: 100% !important;
+            }
+            .purchase-card-footer {
+                padding: 0px 40px 0px 40px !important;
+            }
+        }
+
+        /* Extra small devices (phones, 600px and down) */
+        @media only screen and (min-width: 375px) {
+            body {
+                overflow: none;
+            }
+            .form-control {
+                width: 100% !important;
+            }
+            .form-card {
+                padding: 15px 0px 20px 0px !important;
+            }
+            .purchase-card-footer {
+                padding: 0px 40px 0px 40px !important;
+            }
+        }
+
+        /* Extra small devices (phones, 600px and down) */
+        @media only screen and (min-width: 425px) {
+            body {
+                overflow: none;
+            }
+            .form-control {
+                width: 100% !important;
+            }
+            .form-card {
+                padding: 15px 18px 20px 18px !important;
+            }
+            .purchase-card-footer {
+                padding: 0px 46px 0px 46px !important;
+            }
+        }
+
+        /* Medium devices (landscape tablets, 768px and up) */
+        @media only screen and (min-width: 768px) {
+            h1 {
+                font-size: 40px !important;
+                padding-bottom: 15px !important;
+                font-weight: 700 !important;
+            }
+
+            h2 {
+                font-size: 28px !important;
+                padding-bottom: 15px !important;
+                font-weight: 700 !important;
+            }
+
+            label {
+                font-size: 14px !important;
+                font-weight: bolder !important;
+            }
+            body {
+                overflow: none;
+            }
+            .form-control {
+                width: 100% !important;
+            }
+            .form-card {
+                padding: 15px 28px 20px 28px !important;
+            }
+            .purchase-card-footer {
+                padding: 0px 46px 0px 46px !important;
+            }
+        }
+
+        @media only screen and (max-width: 768px) {
+            /* For mobile phones: */
+
+            label {
+                font-size: 13px !important;
+                font-weight: bolder !important;
+            }
+            h1 {
+                font-size: 30px !important;
+                padding-bottom: 15px !important;
+                font-weight: 700 !important;
+            }
+            
+            h2 {
+                font-size: 28px !important;
+                padding-bottom: 15px !important;
+                font-weight: 700 !important;
+            }
+            body {
+                overflow: none;
+            }
+            .form-control {
+                width: 100% !important;
+            }
+        }
+        pre {
+            background-color: #333;
+            color: #03ca56;
+            padding: 5px 20px;
+            font-family: Consolas, monospace;
+        }
+    </style>
 </head>
 <body>
-    <h1>RMU Forms API Documentation</h1>
-    <h2>Introduction</h2>
-    <h2>Authentication</h2>
-    <h2>API Details</h2>
-    <h3>View All Available Forms</h3>
-    <h3>Purchase a Form</h3>
-    <h3>View Form Info</h3>
-    <h3>View Form Status</h3>
+    <nav class="fp-header" style="position: absolute; top: 0;">
+        <div class="container">
+            <div class="items">
+                <img src="https://drive.google.com/file/d/1tfpPKOknUq0WDJ140xtBFqOEfbP5nXc7" style="width: 60px;">
+                <span class="rmu-logo-letter">Regional Maritime University</span>
+            </div>
+        </div>
+    </nav>
+    <div class="container" style="margin-top: 110px;">
+        <h1>API Documentation</h1>
+        <p>
+            The following documentation presents comprehensive resources to help developers integrate 
+            with RMU Forms Online platform. With these APIs, you can view all available forms, 
+            sell a form, view transaction statuses, and information.
+        </p>
+        <h1 class="mt-4">Introduction</h1>
+        <p>
+            The RMU Forms Online API is built around Representational State Transfer (i.e. REST). 
+            Our APIs accept only JSON-encoded requests and return JSON-encoded responses, 
+            while using standard HTTP verbs and a combination of standard HTTP and custom response codes.
+        </p>
+        <h2 class="mt-4">Prerequisite</h2>
+        <p>
+            Any external service provider who needs access to the RMU Forms Online platform must, first of all, complete all 
+            necessary vendor/client on-boarding requirements. The following processes apply to you:
+
+            <ol style="list-style:lower-roman;">
+                <li>Vendor Registration</li>
+                <li>Technical API Integration</li>
+                <li>Training on use of Client Portal (Optional)</li>
+                <li>Vendor Go-live</li>
+            </ol>
+            <p class="mt-4">
+                <div class="mb-3">
+                    <span><b>Vendor Registration</b></span>
+                    <ul>
+                        <li>Signing of agreement with RMU.</li>
+                        <li>Creation of Vendor Portal Login Access</li>
+                    </ul>
+                </div>
+                <div class="mb-3">
+                    <span><b>Vendor Go-live</b></span>
+                    <p>
+                        Access to our Vendor Portal is given to you upon a successful completion of the registration procedures. 
+                        Integration to the RMU Forms Online API must first start with your access to the Vendor Portal, after which you will 
+                        be able to create the API integration keys. 
+                    </p>
+                </div>
+            </p>
+            <h2 class="mt-4">Connection Procedure</h2>
+            <pre>
+                <code>
+"URL": "https://api.rmuictonline.com/{endpoint}"
+"Method": POST
+"Data format": JSON
+"Content Type": application/json
+                </code>
+            </pre>
+            
+        </p>
+        <h1 class="mt-4">Authentication</h1>
+        <p>
+            You need to authenticate every request you make mainly using basic authentication.
+            On the Vendor Portal dashboard, click on 'Create Keys'; a VendorID and Vendor Secret will be generated for you.
+        </p>
+        <p>
+            <b>Please Note: For testing, a VendorID and Vendor Secret will be generated for you and made available on your dashboard.</b>
+        </p>
+        <h1 class="mt-4">API Details</h1>
+        <p>
+            Find below the various ways you will interract with our APIs to get available forms, sell a form, view a transaction information, 
+            and view a transaction status.
+        </p>
+        <h2 class="mt-4">Available Forms</h2>
+        <h2 class="mt-4">Purchase a Form</h2>
+        <h2 class="mt-4">Purchase Info</h2>
+        <h2 class="mt-4">Purchase Status</h2>
+    </div>
+    
 </body>
 </html>
