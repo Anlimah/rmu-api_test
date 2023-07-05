@@ -101,8 +101,16 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         break;
 
     case 'GET':
+        $request_uri = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
+        $endpoint = '/' . basename($request_uri);
+
+        if ($endpoint === '/api-doc') {
+            require_once 'api-doc.html';
+        } else {
+            require_once 'advert.html';
+        }
+
         header("Content-Type: text/html");
-        require_once 'advert.html';
         break;
 
     default:
