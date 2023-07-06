@@ -540,7 +540,7 @@
         pre {
             background-color: #333;
             color: #03ca56;
-            padding: 5px 20px;
+            padding: 0px 20px;
             font-family: Consolas, monospace;
         }
     </style>
@@ -565,31 +565,33 @@
         <p>
             The following documentation presents comprehensive resources to help developers integrate 
             with RMU Forms Online platform. With these APIs, you can view all available forms, 
-            sell a form, view transaction statuses, and information.
+            sell a form, view transaction statuses, and transaction information.
         </p>
+
         <h1 class="mt-4">Introduction</h1>
         <p>
             The RMU Forms Online API is built around Representational State Transfer (i.e. REST). 
             Our APIs accept only JSON-encoded requests and return JSON-encoded responses, 
             while using standard HTTP verbs and a combination of standard HTTP and custom response codes.
         </p>
+
         <h2 class="mt-4">Prerequisite</h2>
         <p>
             Any external service provider who needs access to the RMU Forms Online platform must, first of all, complete all 
             necessary vendor/client on-boarding requirements. The following processes apply to you:
 
-            <ol style="list-style:lower-roman;">
-                <li>Vendor Registration</li>
-                <li>Technical API Integration</li>
-                <li>Training on use of Client Portal (Optional)</li>
-                <li>Vendor Go-live</li>
+            <ol>
+                <li>i. Vendor Registration</li>
+                <li>ii. Technical API Integration</li>
+                <li>iii. Training on use of Client Portal (Optional)</li>
+                <li>iv. Vendor Go-live</li>
             </ol>
             <p class="mt-4">
                 <div class="mb-3">
                     <span><b>Vendor Registration</b></span>
                     <ul>
-                        <li>Signing of agreement with RMU.</li>
-                        <li>Creation of Vendor Portal Login Access</li>
+                        <li>i. Signing of agreement with RMU</li>
+                        <li>ii. Creation of Vendor Portal Login Access</li>
                     </ul>
                 </div>
                 <div class="mb-3">
@@ -597,7 +599,7 @@
                     <p>
                         Access to our Vendor Portal is given to you upon a successful completion of the registration procedures. 
                         Integration to the RMU Forms Online API must first start with your access to the Vendor Portal, after which you will 
-                        be able to create the API integration keys. 
+                        be able to use test API Integration key and also create live API integration keys. 
                     </p>
                 </div>
             </p>
@@ -612,23 +614,53 @@
             </pre>
             
         </p>
+
         <h1 class="mt-4">Authentication</h1>
+        <h2 class="mt-4">basic authentication</h2>
         <p>
             You need to authenticate every request you make mainly using basic authentication.
             On the Vendor Portal dashboard, click on 'Create Keys'; a VendorID and Vendor Secret will be generated for you.
         </p>
         <p>
-            <b>Please Note: For testing, a VendorID and Vendor Secret will be generated for you and made available on your dashboard.</b>
+            <b><span style="color: rgba(241, 19, 19, 0.747)">Please Note:</span> For testing, a VendorID and Vendor Secret will be generated for you and made available on your dashboard.</b>
         </p>
+        <pre class="mt-4">
+            <code>
+"BODY": "JSON DATA"
+"VENDOR_ID": vendor_id
+"VENDOR_SECRET": vendor_secret
+"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+            </code>
+        </pre>
+
         <h1 class="mt-4">API Details</h1>
         <p>
             Find below the various ways you will interract with our APIs to get available forms, sell a form, view a transaction information, 
             and view a transaction status.
         </p>
+
         <h2 class="mt-4">Available Forms</h2>
+        <p>
+            Use this to query all available forms
+        </p>
+
         <h2 class="mt-4">Purchase a Form</h2>
+        <p>Use this to sell a form to a customer</p>
+
         <h2 class="mt-4">Purchase Info</h2>
+        <p>
+            Use this to query an existing transaction to know the information of that transaction.
+            This feature is useful to know the purchase information/details from RMU Forms Online 
+            for a certain successfull purchase request made.
+        </p>
+
         <h2 class="mt-4">Purchase Status</h2>
+        <p>
+            Use this to query an existing transaction to know the status of that transaction.
+            This feature is useful in cases where you did not receive the purchase status from RMU Forms Online 
+            for a certain purchase request.
+        </p>
+
     </div>
     
 </body>
