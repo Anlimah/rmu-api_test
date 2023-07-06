@@ -31,32 +31,6 @@ class APIEndpointHandler
         return false;
     }
 
-    public function verifyRequestData($data): bool
-    {
-        if (!isset($data["branch_name"]) || empty($data["branch_name"])) return false;
-        if (!isset($data["form_type"]) || empty($data["form_type"])) return false;
-        if (!isset($data["customer_first_name"]) || empty($data["customer_first_name"])) return false;
-        if (!isset($data["customer_last_name"]) || empty($data["customer_last_name"])) return false;
-        if (!isset($data["customer_phone_number"]) || empty($data["customer_phone_number"])) return false;
-        if (!isset($data["ext_trans_id"]) || empty($data["ext_trans_id"])) return false;
-        if (!isset($data["trans_dt"]) || empty($data["trans_dt"])) return false;
-        return true;
-    }
-
-    public function validateRequestData($data): bool
-    {
-        if (!$this->expose->validateInput($data["branch_name"])) return false;
-        if (!$this->expose->validateText($data["form_type"])) return false;
-        if (!$this->expose->validateName($data["customer_first_name"])) return false;
-        if (!$this->expose->validateName($data["customer_last_name"])) return false;
-        if (!$this->expose->validatePhone($data["customer_phone_number"])) return false;
-        if (!$this->expose->validateInput($data["ext_trans_id"])) return false;
-        if (!$this->expose->validateDateTime($data["trans_dt"])) return false;
-        if (isset($data["customer_email_address"]) && !empty($data["customer_email_address"]))
-            if (!$this->expose->validateEmail($data["customer_email_address"])) return false;
-        return true;
-    }
-
     public function getForms($payload, $api_user): mixed
     {
         if (empty($payload)) return array("resp_code" => "701", "message" => "Request body has no parameters.");
@@ -83,7 +57,7 @@ class APIEndpointHandler
             return array("resp_code" => "703", "message" => "Invalid external transaction ID (ext_trans_id) in request body parameters.");
 
         $status = $this->expose->getPurchaseStatusByExtransID($payload["ext_trans_id"]);
-        if (empty($status)) return array("resp_code" => "802", "message" => "No transaction record matched this transaction ID.");
+        if (empty($status)) return array("resp_code" => "802", "message" => "No record found for this transaction ID.");
 
         $this->expose->activityLogger(json_encode($status[0]), "{$payload['ext_trans_id']} - getPurchaseStatusByExtransID", $api_user);
         return array("resp_code" => "001", "message" => "Successfull", "data" => $status[0]);
@@ -101,7 +75,7 @@ class APIEndpointHandler
         $purchaseInfo = $this->expose->getPurchaseInfoByExtransID($payload["ext_trans_id"]);
         $this->expose->activityLogger(json_encode($purchaseInfo), "{$payload['ext_trans_id']} - getPurchaseInfoByExtransID", $api_user);
 
-        if (empty($purchaseInfo)) return array("resp_code" => "802", "message" => "No transaction record matched this transaction ID.");
+        if (empty($purchaseInfo)) return array("resp_code" => "802", "message" => "No record found for this transaction ID.");
         return array("resp_code" => "001", "message" => "Successfull", "data" => $purchaseInfo[0]);
     }
 
@@ -179,11 +153,34 @@ class APIEndpointHandler
         if ($saved["success"]) $loginGenrated = $voucher->genLoginsAndSend($saved["message"]);
         $this->expose->activityLogger(json_encode($saved), "{$payload['ext_trans_id']} - genLoginsAndSend", $api_user);
 
-        if ($loginGenrated["success"]) $response = array("resp_code" => "001", "message" => "Successfull");
-        $loginData = $voucher->getApplicantLoginInfoByTransID($loginGenrated["transID"])[0];
+        if ($loginGenrated["success"]) $loginData = $voucher->getApplicantLoginInfoByTransID($loginGenrated["transID"])[0];
         $this->expose->activityLogger(json_encode($loginData), "{$payload['ext_trans_id']} - getApplicantLoginInfoByTransID", $api_user);
-
-        $response["data"] = $loginData;
+        $response = array("resp_code" => "001", "message" => "Successfull", "data" => $loginData);
         return $response;
+    }
+
+    public function smsPurchaseInfo($payload, $api_user): mixed
+    {
+        if (empty($payload)) return array("resp_code" => "701", "message" => "Request body has no parameters.");
+
+        if (!$this->verifyRequestParam($payload, "ext_trans_id"))
+            return array("resp_code" => "702", "message" => "Missing external transaction ID (ext_trans_id) in request body parameters.");
+        if (!$this->validateRequestParam("validateInput", $payload, "ext_trans_id"))
+            return array("resp_code" => "703", "message" => "Invalid external transaction ID (ext_trans_id) in request body parameters.");
+
+        $purchaseInfo = $this->expose->getPurchaseInfoByExtransID($payload["ext_trans_id"]);
+        if (empty($purchaseInfo)) return array("resp_code" => "802", "message" => "No record found for this transaction ID.");
+        $this->expose->activityLogger(json_encode($purchaseInfo), "{$payload['ext_trans_id']} - getPurchaseInfoByExtransID", $api_user);
+
+        $message = 'Your RMU Online Application login details. ';
+        $message .= 'APPLICATION NUMBER: RMU-' . $purchaseInfo['app_number'];
+        $message .= '  PIN: ' . $purchaseInfo['pin_number'] . ".";
+        $message .= ' Follow the link, https://admissions.rmuictonline.com to start application process.';
+        $to = "+233" . $purchaseInfo["phone_number"];
+
+        $response = json_decode($this->expose->sendSMS($to, $message));
+
+        if (!$response->status) return array("resp_code" => "001", "message" => "successfull");
+        return array("resp_code" => "802", "message" => "Failed to send applicant login details via SMS.");
     }
 }

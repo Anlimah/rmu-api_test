@@ -197,7 +197,7 @@ class VoucherPurchase
     {
         $dataArray = $this->getAppPurchaseData($trans_id);
 
-        if (empty($dataArray)) return array("success" => false, "message" => "No data records for this transaction!");
+        if (empty($dataArray)) return array("success" => false, "message" => "No records found for this transaction!");
 
         $data = $dataArray[0];
         $app_type = 0;
@@ -219,13 +219,13 @@ class VoucherPurchase
                 "Vendor {$vendor_id[0]["vendor"]} sold form with transaction ID {$trans_id}"
             );
 
-            $message = 'Your RMU Online Application login details. ';
+            /*$message = 'Your RMU Online Application login details. ';
             $message .= 'APPLICATION NUMBER: RMU-' . $login_details['app_number'];
             $message .= '  PIN: ' . $login_details['pin_number'] . ".";
             $message .= ' Follow the link, https://admissions.rmuictonline.com to start application process.';
             $to = $data["country_code"] . $data["phone_number"];
 
-            // $this->expose->sendSMS($to, $message);
+            $this->expose->sendSMS($to, $message);*/
             return array("success" => true, "transID" => $trans_id);
         } else {
             return array("success" => false, "message" => "Internal server error: failed to save login details!");
