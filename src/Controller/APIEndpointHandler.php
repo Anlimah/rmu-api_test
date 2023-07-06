@@ -181,6 +181,6 @@ class APIEndpointHandler
         $response = json_decode($this->expose->sendSMS($to, $message));
 
         if (!$response->status) return array("resp_code" => "001", "message" => "successfull");
-        return array("resp_code" => "802", "message" => "Failed to send applicant login details via SMS.");
+        return array("resp_code" => "717", "message" => "Failed to send applicant login details via SMS.");
     }
 }
