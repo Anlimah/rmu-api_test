@@ -225,7 +225,7 @@ class VoucherPurchase
             $message .= ' Follow the link, https://admissions.rmuictonline.com to start application process.';
             $to = $data["country_code"] . $data["phone_number"];
 
-            $this->expose->sendSMS($to, $message);
+            // $this->expose->sendSMS($to, $message);
             return array("success" => true, "transID" => $trans_id);
         } else {
             return array("success" => false, "message" => "Internal server error: failed to save login details!");
