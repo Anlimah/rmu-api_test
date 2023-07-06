@@ -105,7 +105,7 @@ class APIEndpointHandler
         return array("resp_code" => "001", "message" => "Successfull", "data" => $purchaseInfo[0]);
     }
 
-    public function handleAPIBuyForms($payload, $api_user): mixed
+    public function purchaseForm($payload, $api_user): mixed
     {
         if (empty($payload)) return array("resp_code" => "701", "message" => "Request body has no parameters.");
 

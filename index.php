@@ -74,7 +74,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
                 break;
 
             case '/purchaseForm':
-                $response = $expose->handleAPIBuyForms($_POST, $user);
+                $response = $expose->purchaseForm($_POST, $user);
                 http_response_code(201);
                 break;
 
