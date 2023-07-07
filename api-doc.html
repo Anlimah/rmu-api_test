@@ -543,6 +543,34 @@
             padding: 0px 20px;
             font-family: Consolas, monospace;
         }
+
+        pre > p {
+            color: #fff;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        /*--------------------------------------------------------------
+        # Footer
+        --------------------------------------------------------------*/
+        .footer {
+            padding: 20px 0;
+            font-size: 14px;
+            transition: all 0.3s;
+            border-top: 1px solid #cddfff;
+            margin-top: 30px;
+        }
+
+        .footer .copyright {
+            text-align: center;
+            color: #012970;
+        }
+
+        .footer .credits {
+            padding-top: 5px;
+            text-align: center;
+            font-size: 13px;
+            color: #012970;
+        }
     </style>
 </head>
 <body>
@@ -614,54 +642,340 @@
             </pre>
             
         </p>
-
-        <h1 class="mt-4">Authentication</h1>
-        <h2 class="mt-4">basic authentication</h2>
-        <p>
-            You need to authenticate every request you make mainly using basic authentication.
-            On the Vendor Portal dashboard, click on 'Create Keys'; a VendorID and Vendor Secret will be generated for you.
-        </p>
-        <p>
-            <b><span style="color: rgba(241, 19, 19, 0.747)">Please Note:</span> For testing, a VendorID and Vendor Secret will be generated for you and made available on your dashboard.</b>
-        </p>
-        <pre class="mt-4">
-            <code>
+    
+        <div style="margin-top: 80px;">
+            <h1 class="mt-4">Authentication</h1>
+            <h2 class="mt-4">basic authentication</h2>
+            <p>
+                You need to authenticate every request you make mainly using basic authentication.
+                On the Vendor Portal dashboard, click on 'Create Keys'; a VendorID and Vendor Secret will be generated for you.
+            </p>
+            <p>
+                <b><span style="color: rgba(241, 19, 19, 0.747)">Please Note:</span> For testing, a VendorID and Vendor Secret will be generated for you and made available on your dashboard.</b>
+            </p>
+            <pre class="mt-4">
+                <code>
 "BODY": "JSON DATA"
 "VENDOR_ID": vendor_id
 "VENDOR_SECRET": vendor_secret
 "HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
-            </code>
-        </pre>
+                </code>
+            </pre>
+        </div>
+        
+        <div style="margin-top: 80px;">
+            <h1 class="mt-4">API Details</h1>
+            <p>
+                Find below the various ways you will interract with our APIs to get available forms, sell a form, view a transaction information, 
+                and view a transaction status.
+            </p>
+        </div>
 
-        <h1 class="mt-4">API Details</h1>
-        <p>
-            Find below the various ways you will interract with our APIs to get available forms, sell a form, view a transaction information, 
-            and view a transaction status.
-        </p>
+        <div style="margin-top: 80px;">
+            <h2 class="mt-4">Available Forms</h2>
+            <p>
+                Use this to query all available forms. A request should be made first to this endpoint if vendor wants to sell a form voucher to 
+                a customer. This endpoint fetchs all available forms with their corresponding prices.
+            </p>
 
-        <h2 class="mt-4">Available Forms</h2>
-        <p>
-            Use this to query all available forms
-        </p>
+            <p class="mt-4">
+                The table below presents the list of parameters that must be used in forming a Get Forms request from RMU Forms Online.
+            </p>
 
-        <h2 class="mt-4">Purchase a Form</h2>
-        <p>Use this to sell a form to a customer</p>
+            <table class="table table-striped mt-2" style="width: 100%;">
+                <thead>
+                    <th>Fields</th>
+                    <th>Description</th>
+                    <th>Length</th>
+                    <th>DataType</th>
+                    <th>O/M</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>branch_name</td>
+                        <td>The branch of the company which is making the request</td>
+                        <td></td>
+                        <td>String</td>
+                        <td>M</td>
+                    </tr>
+                </tbody>
+            </table>
 
-        <h2 class="mt-4">Purchase Info</h2>
-        <p>
-            Use this to query an existing transaction to know the information of that transaction.
-            This feature is useful to know the purchase information/details from RMU Forms Online 
-            for a certain successfull purchase request made.
-        </p>
+            <div style="display: flex; justify-content: space-between;">
+                <pre class="mt-4 me-4">
+                    <p>Sample Request</p>
+                    <code>
+"BODY": "JSON DATA"
+"VENDOR_ID": vendor_id
+"VENDOR_SECRET": vendor_secret
+"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+                    </code>
+                </pre>
 
-        <h2 class="mt-4">Purchase Status</h2>
-        <p>
-            Use this to query an existing transaction to know the status of that transaction.
-            This feature is useful in cases where you did not receive the purchase status from RMU Forms Online 
-            for a certain purchase request.
-        </p>
+                <pre class="mt-4">
+                    <p>Sample Response</p>
+                    <code>
+"BODY": "JSON DATA"
+"VENDOR_ID": vendor_id
+"VENDOR_SECRET": vendor_secret
+"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+                    </code>
+                </pre>
+            </div>
+        </div>
 
+        <div style="margin-top: 80px;">
+            <h2 class="mt-4">Purchase a Form</h2>
+            <p>
+                Use this to sell a form to a customer. Response from this endpoint will contain the login details 
+                (application number and the pin code) needed to access the application portal.
+            </p>
+            <p class="mt-4">
+                <b><span style="color: rgba(241, 19, 19, 0.747)">Please Note:</span>  Upon successfull response from this endpoint, 
+                this shows that the vendor has sold a form. Therefore, we advice that vendors ensure collection of payment 
+                from the customer before making a request to this endpoint.</b>
+            </p>
+
+            <p class="mt-4">
+                The table below presents the list of parameters that must be used in forming a Purchase Form request from RMU Forms Online.
+            </p>
+
+            <table class="table table-striped mt-2" style="width: 100%;">
+                <thead>
+                    <th>Fields</th>
+                    <th>Description</th>
+                    <th>Length</th>
+                    <th>DataType</th>
+                    <th>O/M</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>branch_name</td>
+                        <td>The branch of the company which is selling the form</td>
+                        <td></td>
+                        <td>String</td>
+                        <td>M</td>
+                    </tr>
+                    <tr>
+                        <td>form_type</td>
+                        <td>The type of form customer wants to buy</td>
+                        <td></td>
+                        <td>String</td>
+                        <td>M</td>
+                    </tr>
+                    <tr>
+                        <td>customer_first_name</td>
+                        <td>The first name of the customer </td>
+                        <td></td>
+                        <td>String</td>
+                        <td>M</td>
+                    </tr>
+                    <tr>
+                        <td>customer_last_name</td>
+                        <td>The last name of the customer</td>
+                        <td></td>
+                        <td>String</td>
+                        <td>M</td>
+                    </tr>
+                    <tr>
+                        <td>customer_email_address</td>
+                        <td>The email address of customer</td>
+                        <td></td>
+                        <td>String</td>
+                        <td>O</td>
+                    </tr>
+                    <tr>
+                        <td>customer_phone_number</td>
+                        <td>The phone number of customer. Example 0244123456</td>
+                        <td>10</td>
+                        <td>String</td>
+                        <td>M</td>
+                    </tr>
+                    <tr>
+                        <td>trans_dt</td>
+                        <td>Current timestamp at the time of sending the request.
+                            Format: <b>YYYY-MM-DD HH:MI:SS</b>
+                            Example: 2015-01-01 23:20:50
+                            <b>Note that Timezone must be set to UTC</b>
+                        </td>
+                        <td></td>
+                        <td>String</td>
+                        <td>M</td>
+                    </tr>
+                    <tr>
+                        <td>ext_trans_id</td>
+                        <td>Unique identifier for the transaction from you.
+                            This must be unique for each payment request you perform. Use this id to track the transaction on the RMU Forms Online.
+                        </td>
+                        <td>15 - 20</td>
+                        <td>String</td>
+                        <td>M <br> <b>NB:</b> Must proceed with unique company code stated by RMU during registration. Can be found
+                        on the vendor dashboard</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="display: flex; justify-content: space-between;">
+                <pre class="mt-4 me-4">
+                    <p>Sample Request</p>
+                    <code>
+"BODY": "JSON DATA"
+"VENDOR_ID": vendor_id
+"VENDOR_SECRET": vendor_secret
+"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+                    </code>
+                </pre>
+
+                <pre class="mt-4">
+                    <p>Sample Response</p>
+                    <code>
+"BODY": "JSON DATA"
+"VENDOR_ID": vendor_id
+"VENDOR_SECRET": vendor_secret
+"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+                    </code>
+                </pre>
+            </div>
+        </div>
+
+        <div style="margin-top: 80px;">
+            <h2 class="mt-4">Purchase Info</h2>
+            <p>
+                Use this to query an existing transaction to know the information of that transaction.
+                This feature is useful to know the purchase information/details from RMU Forms Online 
+                for a certain successfull purchase request made.
+            </p>
+
+            <p class="mt-4">
+                The table below presents the list of parameters that must be used in forming a Purchase Info request from RMU Forms Online.
+            </p>
+
+            <table class="table table-striped mt-2" style="width: 100%;">
+                <thead>
+                    <th>Fields</th>
+                    <th>Description</th>
+                    <th>Length</th>
+                    <th>DataType</th>
+                    <th>O/M</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>branch_name</td>
+                        <td>The branch of the company which is making the request</td>
+                        <td></td>
+                        <td>String</td>
+                        <td>M</td>
+                    </tr>
+                </tr>
+                <tr>
+                    <td>ext_trans_id</td>
+                    <td>Unique identifier for the transaction from you.
+                        This must be unique for each payment request you perform. Use this id to track the transaction on the RMU Forms Online.
+                    </td>
+                    <td>15 - 20</td>
+                    <td>String</td>
+                    <td>M <br> <b>NB:</b> Must proceed with unique company code stated by RMU during registration. Can be found
+                    on the vendor dashboard</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div style="display: flex; justify-content: space-between;">
+                <pre class="mt-4 me-4">
+                    <p>Sample Request</p>
+                    <code>
+"BODY": "JSON DATA"
+"VENDOR_ID": vendor_id
+"VENDOR_SECRET": vendor_secret
+"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+                    </code>
+                </pre>
+
+                <pre class="mt-4">
+                    <p>Sample Response</p>
+                    <code>
+"BODY": "JSON DATA"
+"VENDOR_ID": vendor_id
+"VENDOR_SECRET": vendor_secret
+"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+                    </code>
+                </pre>
+            </div>
+        </div>
+        
+        <div style="margin-top: 80px;">
+            <h2 class="mt-4">Purchase Status</h2>
+            <p>
+                Use this to query an existing transaction to know the status of that transaction.
+                This feature is useful in cases where you did not receive the purchase status from RMU Forms Online 
+                for a certain purchase request.
+            </p>
+
+            <p class="mt-4">
+                The table below presents the list of parameters that must be used in forming a Purchase Satus request from RMU Forms Online.
+            </p>
+
+            <table class="table table-striped mt-2" style="width: 100%;">
+                <thead>
+                    <th>Fields</th>
+                    <th>Description</th>
+                    <th>Length</th>
+                    <th>DataType</th>
+                    <th>O/M</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>branch_name</td>
+                        <td>The branch of the company which is making the request</td>
+                        <td></td>
+                        <td>String</td>
+                        <td>M</td>
+                    </tr>
+                </tr>
+                <tr>
+                    <td>ext_trans_id</td>
+                    <td>Unique identifier for the transaction from you.
+                        This must be unique for each payment request you perform. Use this id to track the transaction on the RMU Forms Online.
+                    </td>
+                    <td>15 - 20</td>
+                    <td>String</td>
+                    <td>M <br> <b>NB:</b> Must proceed with unique company code stated by RMU during registration. Can be found
+                    on the vendor dashboard</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div style="display: flex; justify-content: space-between;">
+                <pre class="mt-4 me-4">
+                    <p>Sample Request</p>
+                    <code>
+"BODY": "JSON DATA"
+"VENDOR_ID": vendor_id
+"VENDOR_SECRET": vendor_secret
+"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+                    </code>
+                </pre>
+
+                <pre class="mt-4">
+                    <p>Sample Response</p>
+                    <code>
+"BODY": "JSON DATA"
+"VENDOR_ID": vendor_id
+"VENDOR_SECRET": vendor_secret
+"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+                    </code>
+                </pre>
+            </div>
+        </div>
+        
     </div>
+
+    <!-- ======= Footer ======= -->
+    <footer id="footer" class="footer container">
+        <div class="copyright">
+        &copy; Copyright <strong><span>RMU - Regional Maritime University</span></strong>. All Rights Reserved
+        </div>
+    </footer><!-- End Footer -->
     
 </body>
 </html>

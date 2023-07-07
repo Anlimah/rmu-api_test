@@ -56,6 +56,11 @@ class APIEndpointHandler
         if (!$this->validateRequestParam("validateInput", $payload, "ext_trans_id"))
             return array("resp_code" => "703", "message" => "Invalid external transaction ID (ext_trans_id) in request body parameters.");
 
+        if (!$this->verifyRequestParam($payload, "branch_name"))
+            return array("resp_code" => "704", "message" => "Missing branch name in request body parameters.");
+        if (!$this->validateRequestParam("validateInput", $payload, "branch_name"))
+            return array("resp_code" => "705", "message" => "Invalid branch name in request body parameters.");
+
         $status = $this->expose->getPurchaseStatusByExtransID($payload["ext_trans_id"]);
         if (empty($status)) return array("resp_code" => "802", "message" => "No record found for this transaction ID.");
 
