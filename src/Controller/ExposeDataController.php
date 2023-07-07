@@ -239,4 +239,11 @@ class ExposeDataController
         WHERE pd.`ext_trans_id` = :t AND vd.`api_user` = :a AND pd.`vendor` = vd.`id`";
         return $this->dm->getID($query, array(':t' => $externalTransID, ':a' => $api_user));
     }
+
+    public function fetchCompanyIDByCode($companyCode, $apiUser): mixed
+    {
+        $query = "SELECT `id` FROM vendor_details 
+                WHERE `company_code` = :c AND api_user = :a AND branch = 'MAIN'";
+        return $this->dm->getID($query, array(":c" => $companyCode, ":a" => $apiUser));
+    }
 }
