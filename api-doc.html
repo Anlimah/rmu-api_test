@@ -545,6 +545,7 @@
             color: #03ca56;
             padding: 0px 20px;
             font-family: Consolas, monospace;
+            height: 300px
         }
 
         pre > p {
@@ -704,20 +705,20 @@
                 </tbody>
             </table>
 
-            <div style="display: flex; justify-content: space-between;">
-                <pre class="mt-4 me-4">
+            <div class="row">
+                <pre class="mt-4 me-4 col">
                     <p>Sample Request</p>
                     <code>
 curl --location 'https://test.api.rmuictonline.com/getForms' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Basic MTIyNDg1Nzk6VElBVjBRTUhD' \
 --data '{
-    "branch_name":"RMU Campus"
+    "branch_name":"Lapaz MTI"
 }'
                     </code>
                 </pre>
 
-                <pre class="mt-4">
+                <pre class="mt-4 col">
                     <p>Sample Response</p>
                     <code>
 {
@@ -726,23 +727,23 @@ curl --location 'https://test.api.rmuictonline.com/getForms' \
     "data": [
         {
             "form": "MASTERS AND UPGRADERS",
-            "price": "2.50"
+            "price": "250.00"
         },
         {
             "form": "DEGREE",
-            "price": "2.00"
+            "price": "200.00"
         },
         {
             "form": "DIPLOMA",
-            "price": "1.50"
+            "price": "150.00"
         },
         {
             "form": "MARINE ENG MEC",
-            "price": "1.50"
+            "price": "150.00"
         },
         {
             "form": "CILT, DILT AND ADILT",
-            "price": "1.50"
+            "price": "150.00"
         }
     ]
 }
@@ -842,24 +843,39 @@ curl --location 'https://test.api.rmuictonline.com/getForms' \
                 </tbody>
             </table>
 
-            <div style="display: flex; justify-content: space-between;">
-                <pre class="mt-4 me-4">
+            <div class="row">
+                <pre class="mt-4 me-4 col">
                     <p>Sample Request</p>
                     <code>
-"BODY": "JSON DATA"
-"VENDOR_ID": vendor_id
-"VENDOR_SECRET": vendor_secret
-"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+curl --location 'https://test.api.rmuictonline.com/purchaseForm' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic MTIyNDg1Nzk6VElBVjBRTUhD' \
+--data-raw '{
+    "branch_name":"Lapaz MTI",
+    "form_type":"DEGREE",
+    "customer_first_name":"Ama",
+    "customer_last_name":"Abrefi",
+    "customer_email_address":"example@gmail.com",
+    "customer_phone_number":"0241234567",
+    "trans_dt":"2023-07-01 14:08:54",
+    "ext_trans_id":"TRY2372736276"
+}'
                     </code>
                 </pre>
 
-                <pre class="mt-4">
+                <pre class="mt-4 col">
                     <p>Sample Response</p>
                     <code>
-"BODY": "JSON DATA"
-"VENDOR_ID": vendor_id
-"VENDOR_SECRET": vendor_secret
-"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+{
+    "resp_code": "001",
+    "message": "successful",
+    "data": {
+        "app_number": "RMU-12235027",
+        "pin_number": "UP64F9M83",
+        "ext_trans_id": "TRY2372736276",
+        "trans_dt":"2023-07-01 14:08:54",
+    }
+}
                     </code>
                 </pre>
             </div>
@@ -893,38 +909,44 @@ curl --location 'https://test.api.rmuictonline.com/getForms' \
                         <td>String</td>
                         <td>M</td>
                     </tr>
-                </tr>
-                <tr>
-                    <td>ext_trans_id</td>
-                    <td>Unique identifier for the transaction from you.
-                        This must be unique for each payment request you perform. Use this id to track the transaction on the RMU Forms Online.
-                    </td>
-                    <td>15 - 20</td>
-                    <td>String</td>
-                    <td>M <br> <b>NB:</b> Must proceed with unique company code stated by RMU during registration. Can be found
-                    on the vendor dashboard</td>
-                </tr>
+                    <tr>
+                        <td>ext_trans_id</td>
+                        <td>Unique identifier for the transaction from you.
+                            This must be unique for each payment request you perform. Use this id to track the transaction on the RMU Forms Online.
+                        </td>
+                        <td>15 - 20</td>
+                        <td>String</td>
+                        <td>M <br> <b>NB:</b> Must proceed with unique company code stated by RMU during registration. Can be found
+                        on the vendor dashboard</td>
+                    </tr>
                 </tbody>
             </table>
 
-            <div style="display: flex; justify-content: space-between;">
-                <pre class="mt-4 me-4">
+            <div class="row">
+                <pre class="mt-4 me-4 col">
                     <p>Sample Request</p>
                     <code>
-"BODY": "JSON DATA"
-"VENDOR_ID": vendor_id
-"VENDOR_SECRET": vendor_secret
-"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+{
+    "ext_trans_id":"TRY2372736276",
+    "branch_name":"Lapaz MTI"
+}
                     </code>
                 </pre>
 
-                <pre class="mt-4">
+                <pre class="mt-4 col">
                     <p>Sample Response</p>
                     <code>
-"BODY": "JSON DATA"
-"VENDOR_ID": vendor_id
-"VENDOR_SECRET": vendor_secret
-"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+{
+    "resp_code": "001",
+    "message": "successful",
+    "data": {
+        "app_number": "RMU-12235027",
+        "pin_number": "UP64F9M83",
+        "ext_trans_id": "TRY2372736276",
+        "phone_number": "0241234567",
+        "trans_dt": "2023-07-01 14:08:54"
+    }
+}
                     </code>
                 </pre>
             </div>
@@ -958,49 +980,52 @@ curl --location 'https://test.api.rmuictonline.com/getForms' \
                         <td>String</td>
                         <td>M</td>
                     </tr>
-                </tr>
-                <tr>
-                    <td>ext_trans_id</td>
-                    <td>Unique identifier for the transaction from you.
-                        This must be unique for each payment request you perform. Use this id to track the transaction on the RMU Forms Online.
-                    </td>
-                    <td>15 - 20</td>
-                    <td>String</td>
-                    <td>M <br> <b>NB:</b> Must proceed with unique company code stated by RMU during registration. Can be found
-                    on the vendor dashboard</td>
-                </tr>
+                    <tr>
+                        <td>ext_trans_id</td>
+                        <td>Unique identifier for the transaction from you.
+                            This must be unique for each payment request you perform. Use this id to track the transaction on the RMU Forms Online.
+                        </td>
+                        <td>15 - 20</td>
+                        <td>String</td>
+                        <td>M <br> <b>NB:</b> Must proceed with unique company code stated by RMU during registration. Can be found
+                        on the vendor dashboard</td>
+                    </tr>
                 </tbody>
             </table>
 
-            <div style="display: flex; justify-content: space-between;">
-                <pre class="mt-4 me-4">
+            <div class="row">
+                <pre class="mt-4 me-4 col">
                     <p>Sample Request</p>
                     <code>
-"BODY": "JSON DATA"
-"VENDOR_ID": vendor_id
-"VENDOR_SECRET": vendor_secret
-"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+{
+    "ext_trans_id":"TRY2372736276",
+    "branch_name":"Lapaz MTI"
+}
                     </code>
                 </pre>
 
-                <pre class="mt-4">
+                <pre class="mt-4 col">
                     <p>Sample Response</p>
                     <code>
-"BODY": "JSON DATA"
-"VENDOR_ID": vendor_id
-"VENDOR_SECRET": vendor_secret
-"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+{
+    "resp_code": "001",
+    "message": "successful",
+    "data": {
+        "status": "COMPLETED",
+        "ext_trans_id": "TRY2372736276",
+        "trans_dt": "2023-07-01 14:08:54"
+    }
+}
                     </code>
                 </pre>
             </div>
         </div>
         
         <div style="margin-top: 80px;">
-            <h2 class="mt-4">Purchase Status</h2>
+            <h2 class="mt-4">Send Purchase Info</h2>
             <p>
-                Use this to query an existing transaction to know the status of that transaction.
-                This feature is useful in cases where you did not receive the purchase status from RMU Forms Online 
-                for a certain purchase request.
+                Use this to query to send purchase Info to your customer.
+                This feature is useful when you want to send the application login details to your customer via SMS and/or Email they have provided.
             </p>
 
             <p class="mt-4">
@@ -1023,38 +1048,37 @@ curl --location 'https://test.api.rmuictonline.com/getForms' \
                         <td>String</td>
                         <td>M</td>
                     </tr>
-                </tr>
-                <tr>
-                    <td>ext_trans_id</td>
-                    <td>Unique identifier for the transaction from you.
-                        This must be unique for each payment request you perform. Use this id to track the transaction on the RMU Forms Online.
-                    </td>
-                    <td>15 - 20</td>
-                    <td>String</td>
-                    <td>M <br> <b>NB:</b> Must proceed with unique company code stated by RMU during registration. Can be found
-                    on the vendor dashboard</td>
-                </tr>
+                    <tr>
+                        <td>ext_trans_id</td>
+                        <td>Unique identifier for the transaction from you.
+                            This must be unique for each payment request you perform. Use this id to track the transaction on the RMU Forms Online.
+                        </td>
+                        <td>15 - 20</td>
+                        <td>String</td>
+                        <td>M <br> <b>NB:</b> Must proceed with unique company code stated by RMU during registration. Can be found
+                        on the vendor dashboard</td>
+                    </tr>
                 </tbody>
             </table>
 
-            <div style="display: flex; justify-content: space-between;">
-                <pre class="mt-4 me-4">
+            <div class="row">
+                <pre class="mt-4 me-4 col">
                     <p>Sample Request</p>
                     <code>
-"BODY": "JSON DATA"
-"VENDOR_ID": vendor_id
-"VENDOR_SECRET": vendor_secret
-"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+{
+    "ext_trans_id":"TRY2372736276",
+    "branch_name":"Lapaz MTI"
+}
                     </code>
                 </pre>
 
-                <pre class="mt-4">
+                <pre class="mt-4 col">
                     <p>Sample Response</p>
                     <code>
-"BODY": "JSON DATA"
-"VENDOR_ID": vendor_id
-"VENDOR_SECRET": vendor_secret
-"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+{
+    "resp_code": "001",
+    "message": "successful"
+}
                     </code>
                 </pre>
             </div>

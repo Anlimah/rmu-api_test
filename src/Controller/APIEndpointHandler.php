@@ -63,10 +63,17 @@ class APIEndpointHandler
         if (!$this->validateRequestParam("validateInput", $payload, "ext_trans_id"))
             return array("resp_code" => "703", "message" => "Invalid external transaction ID (ext_trans_id) in request body parameters.");
 
+        $extTransLen = strlen($payload["ext_trans_id"]);
+        if ($extTransLen >= 15 && $extTransLen >= 20)
+            return array("resp_code" => "704", "message" => "Invalid external transaction ID (ext_trans_id) length.");
+
+        if (!$this->checkCompanyCode($payload["ext_trans_id"], $api_user))
+            return array("resp_code" => "705", "message" => "Invalid external transaction ID (ext_trans_id) code.");
+
         if (!$this->verifyRequestParam($payload, "branch_name"))
-            return array("resp_code" => "704", "message" => "Missing branch name in request body parameters.");
+            return array("resp_code" => "706", "message" => "Missing branch name in request body parameters.");
         if (!$this->validateRequestParam("validateInput", $payload, "branch_name"))
-            return array("resp_code" => "705", "message" => "Invalid branch name in request body parameters.");
+            return array("resp_code" => "707", "message" => "Invalid branch name in request body parameters.");
 
         $status = $this->expose->getPurchaseStatusByExtransID($payload["ext_trans_id"]);
         if (empty($status)) return array("resp_code" => "802", "message" => "No record found for this transaction ID.");
@@ -90,6 +97,11 @@ class APIEndpointHandler
 
         if (!$this->checkCompanyCode($payload["ext_trans_id"], $api_user))
             return array("resp_code" => "705", "message" => "Invalid external transaction ID (ext_trans_id) code.");
+
+        if (!$this->verifyRequestParam($payload, "branch_name"))
+            return array("resp_code" => "706", "message" => "Missing branch name in request body parameters.");
+        if (!$this->validateRequestParam("validateInput", $payload, "branch_name"))
+            return array("resp_code" => "707", "message" => "Invalid branch name in request body parameters.");
 
         $purchaseInfo = $this->expose->getPurchaseInfoByExtransID($payload["ext_trans_id"]);
         $this->expose->activityLogger(json_encode($purchaseInfo), "{$payload['ext_trans_id']} - getPurchaseInfoByExtransID", $api_user);
@@ -201,15 +213,20 @@ class APIEndpointHandler
         if (!$this->checkCompanyCode($payload["ext_trans_id"], $api_user))
             return array("resp_code" => "705", "message" => "Invalid external transaction ID (ext_trans_id) code.");
 
+        if (!$this->verifyRequestParam($payload, "branch_name"))
+            return array("resp_code" => "706", "message" => "Missing branch name in request body parameters.");
+        if (!$this->validateRequestParam("validateInput", $payload, "branch_name"))
+            return array("resp_code" => "707", "message" => "Invalid branch name in request body parameters.");
+
         $purchaseInfo = $this->expose->getPurchaseInfoByExtransID($payload["ext_trans_id"]);
         if (empty($purchaseInfo)) return array("resp_code" => "802", "message" => "No record found for this transaction ID.");
         $this->expose->activityLogger(json_encode($purchaseInfo), "{$payload['ext_trans_id']} - getPurchaseInfoByExtransID", $api_user);
 
         $message = 'Your RMU Online Application login details. ';
-        $message .= 'APPLICATION NUMBER: RMU-' . $purchaseInfo['app_number'];
-        $message .= '  PIN: ' . $purchaseInfo['pin_number'] . ".";
+        $message .= 'APPLICATION NUMBER: ' . $purchaseInfo[0]['app_number'];
+        $message .= '  PIN: ' . $purchaseInfo[0]['pin_number'] . ".";
         $message .= ' Follow the link, https://admissions.rmuictonline.com to start application process.';
-        $to = "+233" . $purchaseInfo["phone_number"];
+        $to = "+233" . $purchaseInfo[0]["phone_number"];
 
         $response = json_decode($this->expose->sendSMS($to, $message));
 

@@ -222,7 +222,8 @@ class ExposeDataController
 
     public function getPurchaseInfoByExtransID($externalTransID)
     {
-        $query = "SELECT CONCAT('RMU-', `app_number`) AS app_number, `pin_number`, `ext_trans_id`, `phone_number` 
+        $query = "SELECT CONCAT('RMU-', `app_number`) AS app_number, `pin_number`, 
+                    `ext_trans_id`, `phone_number`, `ext_trans_datetime` AS trans_dt
                 FROM `purchase_detail` WHERE `ext_trans_id` = :t";
         return $this->dm->getData($query, array(':t' => $externalTransID));
     }

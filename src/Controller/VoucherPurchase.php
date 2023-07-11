@@ -234,7 +234,7 @@ class VoucherPurchase
 
     public function getApplicantLoginInfoByTransID($trans_id)
     {
-        $query = "SELECT CONCAT('RMU-', `app_number`) AS app_number, `pin_number`, `ext_trans_id` 
+        $query = "SELECT CONCAT('RMU-', `app_number`) AS app_number, `pin_number`, `ext_trans_id`, `ext_trans_datetime` AS trans_dt 
                 FROM `purchase_detail` WHERE `id` = :t";
         return $this->dm->getData($query, array(':t' => $trans_id));
     }
