@@ -971,6 +971,71 @@
             </div>
         </div>
         
+        <div style="margin-top: 80px;">
+            <h2 class="mt-4">Purchase Status</h2>
+            <p>
+                Use this to query an existing transaction to know the status of that transaction.
+                This feature is useful in cases where you did not receive the purchase status from RMU Forms Online 
+                for a certain purchase request.
+            </p>
+
+            <p class="mt-4">
+                The table below presents the list of parameters that must be used in forming a Purchase Satus request from RMU Forms Online.
+            </p>
+
+            <table class="table table-striped mt-2" style="width: 100%;">
+                <thead>
+                    <th>Fields</th>
+                    <th>Description</th>
+                    <th>Length</th>
+                    <th>DataType</th>
+                    <th>O/M</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>branch_name</td>
+                        <td>The branch of the company which is making the request</td>
+                        <td></td>
+                        <td>String</td>
+                        <td>M</td>
+                    </tr>
+                </tr>
+                <tr>
+                    <td>ext_trans_id</td>
+                    <td>Unique identifier for the transaction from you.
+                        This must be unique for each payment request you perform. Use this id to track the transaction on the RMU Forms Online.
+                    </td>
+                    <td>15 - 20</td>
+                    <td>String</td>
+                    <td>M <br> <b>NB:</b> Must proceed with unique company code stated by RMU during registration. Can be found
+                    on the vendor dashboard</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div style="display: flex; justify-content: space-between;">
+                <pre class="mt-4 me-4">
+                    <p>Sample Request</p>
+                    <code>
+"BODY": "JSON DATA"
+"VENDOR_ID": vendor_id
+"VENDOR_SECRET": vendor_secret
+"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+                    </code>
+                </pre>
+
+                <pre class="mt-4">
+                    <p>Sample Response</p>
+                    <code>
+"BODY": "JSON DATA"
+"VENDOR_ID": vendor_id
+"VENDOR_SECRET": vendor_secret
+"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+                    </code>
+                </pre>
+            </div>
+        </div>
+        
     </div>
 
     <!-- ======= Footer ======= -->
