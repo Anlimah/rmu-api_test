@@ -51,7 +51,7 @@ class APIEndpointHandler
         $this->expose->activityLogger(json_encode($data), $payload["branch_name"] . " - getForms", $api_user);
 
         if (empty($data)) return array("resp_code" => "801", "message" => "No record found for this form type.");
-        return array("resp_code" => "001", "message" => "successfull", "data" => $data);
+        return array("resp_code" => "001", "message" => "successful", "data" => $data);
     }
 
     public function purchaseStatus($payload, $api_user): mixed
@@ -72,7 +72,7 @@ class APIEndpointHandler
         if (empty($status)) return array("resp_code" => "802", "message" => "No record found for this transaction ID.");
 
         $this->expose->activityLogger(json_encode($status[0]), "{$payload['ext_trans_id']} - getPurchaseStatusByExtransID", $api_user);
-        return array("resp_code" => "001", "message" => "Successfull", "data" => $status[0]);
+        return array("resp_code" => "001", "message" => "successful", "data" => $status[0]);
     }
 
     public function purchaseInfo($payload, $api_user): mixed
@@ -95,7 +95,7 @@ class APIEndpointHandler
         $this->expose->activityLogger(json_encode($purchaseInfo), "{$payload['ext_trans_id']} - getPurchaseInfoByExtransID", $api_user);
 
         if (empty($purchaseInfo)) return array("resp_code" => "802", "message" => "No record found for this transaction ID.");
-        return array("resp_code" => "001", "message" => "Successfull", "data" => $purchaseInfo[0]);
+        return array("resp_code" => "001", "message" => "successful", "data" => $purchaseInfo[0]);
     }
 
     public function purchaseForm($payload, $api_user): mixed
@@ -181,7 +181,7 @@ class APIEndpointHandler
 
         if ($loginGenrated["success"]) $loginData = $voucher->getApplicantLoginInfoByTransID($loginGenrated["transID"])[0];
         $this->expose->activityLogger(json_encode($loginData), "{$payload['ext_trans_id']} - getApplicantLoginInfoByTransID", $api_user);
-        $response = array("resp_code" => "001", "message" => "Successfull", "data" => $loginData);
+        $response = array("resp_code" => "001", "message" => "successful", "data" => $loginData);
         return $response;
     }
 
@@ -213,7 +213,7 @@ class APIEndpointHandler
 
         $response = json_decode($this->expose->sendSMS($to, $message));
 
-        if (!$response->status) return array("resp_code" => "001", "message" => "successfull");
+        if (!$response->status) return array("resp_code" => "001", "message" => "successful");
         return array("resp_code" => "720", "message" => "Failed to send applicant login details via SMS.");
     }
 }

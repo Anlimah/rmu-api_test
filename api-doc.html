@@ -708,20 +708,44 @@
                 <pre class="mt-4 me-4">
                     <p>Sample Request</p>
                     <code>
-"BODY": "JSON DATA"
-"VENDOR_ID": vendor_id
-"VENDOR_SECRET": vendor_secret
-"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+curl --location 'https://test.api.rmuictonline.com/getForms' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic MTIyNDg1Nzk6VElBVjBRTUhD' \
+--data '{
+    "branch_name":"RMU Campus"
+}'
                     </code>
                 </pre>
 
                 <pre class="mt-4">
                     <p>Sample Response</p>
                     <code>
-"BODY": "JSON DATA"
-"VENDOR_ID": vendor_id
-"VENDOR_SECRET": vendor_secret
-"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+{
+    "resp_code": "001",
+    "message": "successful",
+    "data": [
+        {
+            "form": "MASTERS AND UPGRADERS",
+            "price": "2.50"
+        },
+        {
+            "form": "DEGREE",
+            "price": "2.00"
+        },
+        {
+            "form": "DIPLOMA",
+            "price": "1.50"
+        },
+        {
+            "form": "MARINE ENG MEC",
+            "price": "1.50"
+        },
+        {
+            "form": "CILT, DILT AND ADILT",
+            "price": "1.50"
+        }
+    ]
+}
                     </code>
                 </pre>
             </div>
