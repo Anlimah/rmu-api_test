@@ -50,7 +50,7 @@ class APIEndpointHandler
         $data = $this->expose->getAllAvaialbleForms();
         $this->expose->activityLogger(json_encode($data), $payload["branch_name"] . " - getForms", $api_user);
 
-        if (empty($data)) return array("resp_code" => "801", "message" => "No record found for this form type.");
+        if (empty($data)) return array("resp_code" => "801", "message" => "Forms are currently unavailable.");
         return array("resp_code" => "001", "message" => "successful", "data" => $data);
     }
 
@@ -167,6 +167,13 @@ class APIEndpointHandler
             return array("resp_code" => "803", "message" => "Duplicate transaction request.");
 
         $formInfo = $this->expose->getFormDetailsByFormName($payload["form_type"])[0];
+        if (empty($formInfo)) return array("resp_code" => "804", "message" => "Invalid form type.");
+
+        $vendorID = $this->expose->getVendorIdByAPIUser($api_user);
+        if (empty($vendorID)) return array("resp_code" => "805", "message" => "Failed fetching vendor details for processing.");
+
+        $adminPeriod = $this->expose->getCurrentAdmissionPeriodID();
+        if (empty($adminPeriod)) return array("resp_code" => "806", "message" => "Admission is currently closed.");
 
         $data['branch']         = $payload["branch_name"];
         $data['first_name']     = $payload["customer_first_name"];
@@ -179,25 +186,29 @@ class APIEndpointHandler
         $data['country_name']   = "Ghana";
         $data['country_code']   = "+233";
         $data['amount']         = $formInfo["amount"];
-        $data['vendor_id']      = $this->expose->getVendorIdByAPIUser($api_user);
+        $data['vendor_id']      = $vendorID;
         $data['pay_method']     = "CASH";
         $trans_id               = time();
-        $data['admin_period']   = $this->expose->getCurrentAdmissionPeriodID();
-
+        $data['admin_period']   = $adminPeriod;
+        return $data;
         $voucher = new VoucherPurchase();
+
         $saved = $voucher->SaveFormPurchaseData($data, $trans_id);
         $this->expose->activityLogger(json_encode($data), "{$payload['ext_trans_id']} - SaveFormPurchaseData", $api_user);
+        if (!$saved["success"]) return array("resp_code" => $saved["resp_code"], "message" => $saved["message"]);
 
-        if ($saved["success"]) $loginGenrated = $voucher->genLoginsAndSend($saved["message"]);
+        $loginGenrated = $voucher->genLoginsAndSend($saved["message"]);
         $this->expose->activityLogger(json_encode($saved), "{$payload['ext_trans_id']} - genLoginsAndSend", $api_user);
+        if (!$loginGenrated["success"]) return array("resp_code" => $loginGenrated["resp_code"], "message" => $loginGenrated["message"]);
 
-        if ($loginGenrated["success"]) $loginData = $voucher->getApplicantLoginInfoByTransID($loginGenrated["transID"])[0];
+        $loginData = $voucher->getApplicantLoginInfoByTransID($loginGenrated["transID"])[0];
         $this->expose->activityLogger(json_encode($loginData), "{$payload['ext_trans_id']} - getApplicantLoginInfoByTransID", $api_user);
+
         $response = array("resp_code" => "001", "message" => "successful", "data" => $loginData);
         return $response;
     }
 
-    public function smsPurchaseInfo($payload, $api_user): mixed
+    public function sendPurchaseInfo($payload, $api_user): mixed
     {
         if (empty($payload)) return array("resp_code" => "701", "message" => "Request body has no parameters.");
 

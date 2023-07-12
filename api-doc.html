@@ -1071,7 +1071,7 @@ curl --location 'https://test.api.rmuictonline.com/purchaseStatus' \
                 <pre class="mt-4 me-4 col">
                     <p>Sample Request</p>
                     <code>
-curl --location 'https://test.api.rmuictonline.com/smsPurchaseInfo' \
+curl --location 'https://test.api.rmuictonline.com/sendPurchaseInfo' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Basic MTIyNDg1Nzk6VElBVjBRTUhD' \
 --data '{
@@ -1091,6 +1091,175 @@ curl --location 'https://test.api.rmuictonline.com/smsPurchaseInfo' \
                     </code>
                 </pre>
             </div>
+        </div>
+
+        <div style="margin-top: 80px;">
+            <h2 class="mt-4">Custom Response Codes</h2>
+
+            <table class="table table-striped mt-2" style="width: 100%;">
+                <thead>
+                    <th>Response Code</th>
+                    <th>Description</th>
+                </thead>
+                <tbody>
+                    <tr>
+                      <td>001</td>
+                      <td>Successful</td>
+                    </tr>
+                    <tr>
+                      <td>601</td>
+                      <td>No Content-Type header provided</td>
+                    </tr>
+                    <tr>
+                      <td>602</td>
+                      <td>Only JSON-encoded requests are allowed</td>
+                    </tr>
+                    <tr>
+                      <td>603</td>
+                      <td>No Authorization header information</td>
+                    </tr>
+                    <tr>
+                      <td>604</td>
+                      <td>Basic Authorization required</td>
+                    </tr>
+                    <tr>
+                      <td>605</td>
+                      <td>Authorization credentials required</td>
+                    </tr>
+                    <tr>
+                      <td>606</td>
+                      <td>Invalid authorization credentials</td>
+                    </tr>
+                    <tr>
+                      <td>607</td>
+                      <td>Invalid endpoint</td>
+                    </tr>
+                    <tr>
+                      <td>701</td>
+                      <td>Request body has no parameters</td>
+                    </tr>
+                    <tr>
+                      <td>702</td>
+                      <td>Missing external transaction ID (ext_trans_id) in request body parameters</td>
+                    </tr>
+                    <tr>
+                      <td>703</td>
+                      <td>Invalid external transaction ID (ext_trans_id) in request body parameters</td>
+                    </tr>
+                    <tr>
+                      <td>704</td>
+                      <td>Invalid external transaction ID (ext_trans_id) length</td>
+                    </tr>
+                    <tr>
+                      <td>705</td>
+                      <td>Invalid external transaction ID (ext_trans_id) code</td>
+                    </tr>
+                    <tr>
+                      <td>706</td>
+                      <td>Missing branch name in request body parameters</td>
+                    </tr>
+                    <tr>
+                      <td>707</td>
+                      <td>Invalid branch name in request body parameters</td>
+                    </tr>
+                    <tr>
+                      <td>708</td>
+                      <td>Missing form type in request body parameters</td>
+                    </tr>
+                    <tr>
+                      <td>709</td>
+                      <td>Invalid form type in request body parameters</td>
+                    </tr>
+                    <tr>
+                      <td>710</td>
+                      <td>Missing customer first name in request body parameters</td>
+                    </tr>
+                    <tr>
+                      <td>711</td>
+                      <td>Invalid customer first name in request body parameters</td>
+                    </tr>
+                    <tr>
+                      <td>712</td>
+                      <td>Missing customer last name in request body parameters</td>
+                    </tr>
+                    <tr>
+                      <td>713</td>
+                      <td>Invalid customer last name in request body parameters</td>
+                    </tr>
+                    <tr>
+                      <td>714</td>
+                      <td>Missing customer email address in request body parameters</td>
+                    </tr>
+                    <tr>
+                      <td>715</td>
+                      <td>Invalid customer email address in request body parameters</td>
+                    </tr>
+                    <tr>
+                      <td>716</td>
+                      <td>Missing customer phone number in request body parameters</td>
+                    </tr>
+                    <tr>
+                      <td>717</td>
+                      <td>Invalid customer phone number in request body parameters</td>
+                    </tr>
+                    <tr>
+                      <td>718</td>
+                      <td>Missing transaction datetime in request body parameters</td>
+                    </tr>
+                    <tr>
+                      <td>719</td>
+                      <td>Invalid transaction datetime in request body parameters</td>
+                    </tr>
+                    <tr>
+                      <td>720</td>
+                      <td>Failed to send applicant login details via SMS</td>
+                    </tr>
+                    <tr>
+                      <td>801</td>
+                      <td>Forms are currently unavailable</td>
+                    </tr>
+                    <tr>
+                      <td>802</td>
+                      <td>No record found for this transaction ID</td>
+                    </tr>
+                    <tr>
+                      <td>803</td>
+                      <td>Duplicate transaction request</td>
+                    </tr>
+                    <tr>
+                        <td>804</td>
+                        <td>Invalid form type</td>
+                    </tr>
+                    <tr>
+                        <td>805</td>
+                        <td>Failed fetching vendor details for processing</td>
+                    </tr>
+                    <tr>
+                        <td>806</td>
+                        <td>Admission is currently closed</td>
+                    </tr>
+                    <tr>
+                        <td>807</td>
+                        <td>Purchase data required!</td>
+                    </tr>
+                    <tr>
+                        <td>808</td>
+                        <td>Failed saving purchase data!</td>
+                    </tr>
+                    <tr>
+                        <td>809</td>
+                        <td>Failed fetching purchase information</td>
+                    </tr>
+                    <tr>
+                        <td>810</td>
+                        <td>Failed to update login details!</td>
+                    </tr>
+                    <tr>
+                        <td>811</td>
+                        <td>Failed to save generated login details!</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         
     </div>

@@ -78,8 +78,8 @@ switch ($_SERVER["REQUEST_METHOD"]) {
                 http_response_code(201);
                 break;
 
-            case '/smsPurchaseInfo':
-                $response = $expose->smsPurchaseInfo($_POST, $user);
+            case '/sendPurchaseInfo':
+                $response = $expose->sendPurchaseInfo($_POST, $user);
                 http_response_code(201);
                 break;
 

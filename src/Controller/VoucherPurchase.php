@@ -146,7 +146,9 @@ class VoucherPurchase
 
     public function SaveFormPurchaseData($data, $trans_id)
     {
-        if (empty($data) && empty($trans_id)) return array("success" => false, "message" => "Invalid data entries!");
+        if (empty($data) && empty($trans_id)) return array(
+            "success" => false, "resp_code" => "807", "message" => "Purchase data required!"
+        );
 
         $fn = $data['first_name'];
         $ln = $data['last_name'];
@@ -169,7 +171,9 @@ class VoucherPurchase
         $ap_id = $data['admin_period'];
 
         $purchase_id = $this->saveVendorPurchaseData($trans_id, $et, $br, $vd, $fi, $ap_id, $pm, $am, $fn, $ln, $em, $cn, $cc, $pn, $td);
-        if (!$purchase_id) return array("success" => false, "message" => "Failed saving purchase data!");
+        if (!$purchase_id) return array(
+            "success" => false, "resp_code" => "808",  "message" => "Failed saving purchase data!"
+        );
 
         return array("success" => true, "message" => $purchase_id);
     }
@@ -197,7 +201,9 @@ class VoucherPurchase
     {
         $dataArray = $this->getAppPurchaseData($trans_id);
 
-        if (empty($dataArray)) return array("success" => false, "message" => "No records found for this transaction!");
+        if (empty($dataArray)) return array(
+            "success" => false, "resp_code" => "809",  "message" => "Failed fetching purchase information"
+        );
 
         $data = $dataArray[0];
         $app_type = 0;
@@ -210,25 +216,21 @@ class VoucherPurchase
 
         if ($this->createApplicantUser($login_details['app_number'], $login_details['pin_number'], $trans_id)) {
 
-            $this->updateVendorPurchaseData($trans_id, $login_details['app_number'], $login_details['pin_number'], 'COMPLETED');
-            $vendor_id = $this->getVendorIDByTransactionID($trans_id);
+            if ($this->updateVendorPurchaseData($trans_id, $login_details['app_number'], $login_details['pin_number'], 'COMPLETED')) {
+                $vendor_id = $this->getVendorIDByTransactionID($trans_id);
 
-            $this->logActivity(
-                $vendor_id[0]["vendor"],
-                "INSERT",
-                "Vendor {$vendor_id[0]["vendor"]} sold form with transaction ID {$trans_id}"
-            );
+                $this->logActivity(
+                    $vendor_id[0]["vendor"],
+                    "INSERT",
+                    "Vendor {$vendor_id[0]["vendor"]} sold form with transaction ID {$trans_id}"
+                );
 
-            /*$message = 'Your RMU Online Application login details. ';
-            $message .= 'APPLICATION NUMBER: RMU-' . $login_details['app_number'];
-            $message .= '  PIN: ' . $login_details['pin_number'] . ".";
-            $message .= ' Follow the link, https://admissions.rmuictonline.com to start application process.';
-            $to = $data["country_code"] . $data["phone_number"];
-
-            $this->expose->sendSMS($to, $message);*/
-            return array("success" => true, "transID" => $trans_id);
+                return array("success" => true, "transID" => $trans_id);
+            } else {
+                return array("success" => false, "resp_code" => "810",  "message" => "Failed to update login details!");
+            }
         } else {
-            return array("success" => false, "message" => "Internal server error: failed to save login details!");
+            return array("success" => false, "resp_code" => "811",  "message" => "Failed to save generated login details!");
         }
     }
 
