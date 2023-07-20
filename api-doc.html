@@ -623,7 +623,14 @@
                     <span><b>Vendor Registration</b></span>
                     <ul>
                         <li>i. Signing of agreement with RMU</li>
-                        <li>ii. Creation of Vendor Portal Login Access</li>
+                        <li>ii. Creation of Vendor Portal Login Access on test environment.</li>
+                    </ul>
+                </div>
+                <div class="mb-3">
+                    <span><b>API Integration</b></span>
+                    <ul>
+                        <li>i. API integration begins.</li>
+                        <li>ii. Migrate vendor access to production mode</li>
                     </ul>
                 </div>
                 <div class="mb-3">
@@ -652,17 +659,17 @@
             <h2 class="mt-4">basic authentication</h2>
             <p>
                 You need to authenticate every request you make mainly using basic authentication.
-                On the Vendor Portal dashboard, click on 'Create Keys'; a VendorID and Vendor Secret will be generated for you.
+                On the Vendor Portal dashboard, click on 'Generate New API Keys'; a Client ID and Client Secret will be generated for you.
             </p>
             <p>
-                <b><span style="color: rgba(241, 19, 19, 0.747)">Please Note:</span> For testing, a VendorID and Vendor Secret will be generated for you and made available on your dashboard.</b>
+                <b><span style="color: rgba(241, 19, 19, 0.747)">Please Note:</span> For testing, the test environment should be used.</b>
             </p>
             <pre class="mt-4">
                 <code>
 "BODY": "JSON DATA"
-"VENDOR_ID": vendor_id
-"VENDOR_SECRET": vendor_secret
-"HEADER": Authorization: Basic base64_encode("&lt;VENDOR_ID&gt;:&lt;VENDOR_SECRET&gt;")
+"CLIENT_ID": client_id
+"CLIENT_SECRET": client_secret
+"HEADER": Authorization: Basic base64_encode("&lt;CLIENT_ID&gt;:&lt;CLIENT_SECRET&gt;")
                 </code>
             </pre>
         </div>
