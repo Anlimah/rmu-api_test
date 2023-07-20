@@ -33,7 +33,6 @@ class APIEndpointHandler
 
     public function checkCompanyCode($externalTransID, $api_user): mixed
     {
-        // ALTER TABLE vendor_details ADD COLUMN company_code VARCHAR(3) AFTER company;
         $companyCode = substr($externalTransID, 0, 3);
         return $this->expose->fetchCompanyIDByCode($companyCode, $api_user);
     }

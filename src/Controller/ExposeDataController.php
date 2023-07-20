@@ -230,21 +230,21 @@ class ExposeDataController
 
     public function getVendorIdByAPIUser($api_user): mixed
     {
-        $query = "SELECT `id` FROM `vendor_details` WHERE `api_user`=:a";
+        $query = "SELECT `vendor_id` FROM `api_users` WHERE `id` = :a";
         return $this->dm->getID($query, array(':a' => $api_user));
     }
 
     public function verifyExternalTransID($externalTransID, $api_user)
     {
-        $query = "SELECT pd.`id` FROM `purchase_detail` AS pd, vendor_details AS vd 
-        WHERE pd.`ext_trans_id` = :t AND vd.`api_user` = :a AND pd.`vendor` = vd.`id`";
+        $query = "SELECT pd.`id` FROM `purchase_detail` AS pd, api_users AS au 
+        WHERE pd.`ext_trans_id` = :t AND au.`vendor_id` = :a AND pd.`vendor` = au.`vendor_id`";
         return $this->dm->getID($query, array(':t' => $externalTransID, ':a' => $api_user));
     }
 
     public function fetchCompanyIDByCode($companyCode, $apiUser): mixed
     {
-        $query = "SELECT `id` FROM vendor_details 
-                WHERE `company_code` = :c AND api_user = :a AND branch = 'MAIN'";
+        $query = "SELECT `id` FROM vendor_details AS vd, api_users AS au 
+                WHERE vd.`company_code` = :c AND au.id = :a AND branch = 'MAIN' AND au.vendor_id = vd.id";
         return $this->dm->getID($query, array(":c" => $companyCode, ":a" => $apiUser));
     }
 }
