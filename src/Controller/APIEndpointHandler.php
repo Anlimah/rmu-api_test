@@ -165,7 +165,7 @@ class APIEndpointHandler
         if (!empty($this->expose->verifyExternalTransID($payload["ext_trans_id"], $api_user)))
             return array("resp_code" => "803", "message" => "Duplicate transaction request.");
 
-        $formInfo = $this->expose->getFormDetailsByFormName($payload["form_type"])[0];
+        $formInfo = $this->expose->getFormDetailsByFormName($payload["form_type"]);
         if (empty($formInfo)) return array("resp_code" => "804", "message" => "Invalid form type.");
 
         $vendorID = $this->expose->getVendorIdByAPIUser($api_user);
@@ -180,16 +180,16 @@ class APIEndpointHandler
         $data['phone_number']   = $payload["customer_phone_number"];
         $data['ext_trans_id']   = $payload["ext_trans_id"];
         $data["ext_trans_dt"]   = $payload["trans_dt"];
-        $data['form_id']        = $formInfo["id"];
+        $data['form_id']        = $formInfo[0]["id"];
         $data['email_address']  = isset($payload["customer_email_address"]) ? $payload["customer_email_address"] : "";
         $data['country_name']   = "Ghana";
         $data['country_code']   = "+233";
-        $data['amount']         = $formInfo["amount"];
-        $data['vendor_id']      = $vendorID;
+        $data['amount']         = $formInfo[0]["amount"];
+        $data['vendor_id']      = $vendorID[0]["vendor_id"];
         $data['pay_method']     = "CASH";
         $trans_id               = time();
-        $data['admin_period']   = $adminPeriod;
-        return $data;
+        $data['admin_period']   = $adminPeriod[0]["id"];
+
         $voucher = new VoucherPurchase();
 
         $saved = $voucher->SaveFormPurchaseData($data, $trans_id);

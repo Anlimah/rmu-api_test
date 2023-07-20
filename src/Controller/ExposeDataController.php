@@ -103,7 +103,7 @@ class ExposeDataController
 
     public function getCurrentAdmissionPeriodID()
     {
-        return $this->dm->getID("SELECT `id` FROM `admission_period` WHERE `active` = 1");
+        return $this->dm->getData("SELECT `id` FROM `admission_period` WHERE `active` = 1");
     }
 
     public function getIPAddress()
@@ -231,13 +231,13 @@ class ExposeDataController
     public function getVendorIdByAPIUser($api_user): mixed
     {
         $query = "SELECT `vendor_id` FROM `api_users` WHERE `id` = :a";
-        return $this->dm->getID($query, array(':a' => $api_user));
+        return $this->dm->getData($query, array(':a' => $api_user));
     }
 
     public function verifyExternalTransID($externalTransID, $api_user)
     {
         $query = "SELECT pd.`id` FROM `purchase_detail` AS pd, api_users AS au 
-        WHERE pd.`ext_trans_id` = :t AND au.`vendor_id` = :a AND pd.`vendor` = au.`vendor_id`";
+        WHERE pd.`ext_trans_id` = :t AND au.`id` = :a AND pd.`vendor` = au.`vendor_id`";
         return $this->dm->getID($query, array(':t' => $externalTransID, ':a' => $api_user));
     }
 
