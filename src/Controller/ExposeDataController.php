@@ -103,7 +103,7 @@ class ExposeDataController
 
     public function getCurrentAdmissionPeriodID()
     {
-        return $this->dm->getData("SELECT `id` FROM `admission_period` WHERE `active` = 1");
+        return $this->dm->getData("SELECT `id` FROM `admission_period` WHERE `active` = 1 AND `closed` = 0");
     }
 
     public function getIPAddress()
@@ -210,7 +210,7 @@ class ExposeDataController
 
     public function getAllAvaialbleForms()
     {
-        return $this->dm->getData("SELECT `name` AS form, `amount` AS price FROM `forms`");
+        return $this->dm->getData("SELECT `name` AS form_type, `amount` AS price FROM `forms`");
     }
 
     public function getPurchaseStatusByExtransID($externalTransID)
