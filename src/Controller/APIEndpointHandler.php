@@ -14,7 +14,7 @@ class APIEndpointHandler
     public function __construct()
     {
         $this->expose = new ExposeDataController();
-        $redis = new Client();
+        $this->redis = new Client();
     }
 
     public function authenticateAccess($username, $password)
@@ -49,17 +49,15 @@ class APIEndpointHandler
             return array("resp_code" => "707", "message" => "Invalid branch name in request body parameters.");
 
         $redisGetForms = $this->redis->get('getForms');
-
         if (!empty($redisGetForms)) {
-            $data = $redisGetForms;
+            $data = unserialize($redisGetForms);
         } else {
             $data = $this->expose->getAllAvaialbleForms();
-            $this->redis->set("getForms", $data);
+            $this->redis->set("getForms", serialize($data));
         }
 
-        $this->expose->activityLogger(json_encode($data), $payload["branch_name"] . " - getForms", $api_user);
-
         if (empty($data)) return array("resp_code" => "801", "message" => "Forms are currently unavailable.");
+        $this->expose->activityLogger(json_encode($data), $payload["branch_name"] . " - getForms", $api_user);
         return array("resp_code" => "001", "message" => "successful", "data" => $data);
     }
 
