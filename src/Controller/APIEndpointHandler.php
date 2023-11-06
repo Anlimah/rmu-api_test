@@ -4,14 +4,17 @@ namespace Src\Controller;
 
 use Src\Controller\ExposeDataController;
 use Src\Controller\VoucherPurchase;
+use Predis\Client;
 
 class APIEndpointHandler
 {
-    private $expose         = null;
+    private $expose = null;
+    private $redis = null;
 
     public function __construct()
     {
         $this->expose = new ExposeDataController();
+        $redis = new Client();
     }
 
     public function authenticateAccess($username, $password)
@@ -40,13 +43,20 @@ class APIEndpointHandler
     public function getForms($payload, $api_user): mixed
     {
         if (empty($payload)) return array("resp_code" => "701", "message" => "Request body has no parameters.");
-
         if (!$this->verifyRequestParam($payload, "branch_name"))
             return array("resp_code" => "706", "message" => "Missing branch name in request body parameters.");
         if (!$this->validateRequestParam("validateInput", $payload, "branch_name"))
             return array("resp_code" => "707", "message" => "Invalid branch name in request body parameters.");
 
-        $data = $this->expose->getAllAvaialbleForms();
+        $redisGetForms = $this->redis->get('getForms');
+
+        if (!empty($redisGetForms)) {
+            $data = $redisGetForms;
+        } else {
+            $data = $this->expose->getAllAvaialbleForms();
+            $this->redis->set("getForms", $data);
+        }
+
         $this->expose->activityLogger(json_encode($data), $payload["branch_name"] . " - getForms", $api_user);
 
         if (empty($data)) return array("resp_code" => "801", "message" => "Forms are currently unavailable.");
