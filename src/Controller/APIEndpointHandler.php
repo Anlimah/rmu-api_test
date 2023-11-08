@@ -130,9 +130,8 @@ class APIEndpointHandler
         if ($extTransLen <= 15 && $extTransLen >= 20)
             return array("resp_code" => "704", "message" => "Invalid external transaction ID (ext_trans_id) length.");
 
-        //if (!$this->checkCompanyCode($payload["ext_trans_id"], $api_user))
-        $ccode = $this->checkCompanyCode($payload["ext_trans_id"], $api_user);
-        return array("resp_code" => "705", "message" => "Invalid external transaction ID (ext_trans_id) code. {$ccode} - {$api_user}");
+        if (!$this->checkCompanyCode($payload["ext_trans_id"], $api_user))
+            return array("resp_code" => "705", "message" => "Invalid external transaction ID (ext_trans_id) code.");
 
         if (!$this->verifyRequestParam($payload, "branch_name"))
             return array("resp_code" => "706", "message" => "Missing branch name in request body parameters.");
