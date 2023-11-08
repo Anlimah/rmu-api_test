@@ -203,7 +203,7 @@ class ExposeDataController
     public function verifyAPIAccess($username, $password): int
     {
         $sql = "SELECT * FROM `api_users` WHERE `username`=:u";
-        return $this->dm->getData($sql, array(':u' => $username));
+        $data = $this->dm->getData($sql, array(':u' => $username));
         if (!empty($data)) if (password_verify($password, $data[0]["password"])) return (int) $data[0]["id"];
         return 0;
     }
