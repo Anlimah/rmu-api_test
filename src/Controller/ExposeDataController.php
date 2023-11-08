@@ -200,7 +200,7 @@ class ExposeDataController
         return $this->dm->inputData($query, $params);
     }
 
-    public function verifyAPIAccess($username, $password): int
+    public function verifyAPIAccess($username, $password): mixed
     {
         $sql = "SELECT * FROM `api_users` WHERE `username`=:u";
         return $this->dm->getData($sql, array(':u' => $username));
