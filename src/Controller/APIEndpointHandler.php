@@ -37,7 +37,6 @@ class APIEndpointHandler
     public function checkCompanyCode($externalTransID, $api_user): mixed
     {
         $companyCode = substr($externalTransID, 0, 3);
-        return $companyCode;
         return $this->expose->fetchCompanyIDByCode($companyCode, $api_user);
     }
 
