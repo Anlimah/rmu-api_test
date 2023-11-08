@@ -203,7 +203,7 @@ class ExposeDataController
     public function verifyAPIAccess($username, $password): int
     {
         $sql = "SELECT * FROM `api_users` WHERE `username`=:u";
-        $data = $this->dm->getData($sql, array(':u' => $username));
+        return $this->dm->getData($sql, array(':u' => $username));
         if (!empty($data)) if (password_verify($password, $data[0]["password"])) return (int) $data[0]["id"];
         return 0;
     }
@@ -244,7 +244,7 @@ class ExposeDataController
     public function fetchCompanyIDByCode($companyCode, $apiUser): mixed
     {
         $query = "SELECT vd.`id` FROM vendor_details AS vd, api_users AS au 
-                WHERE vd.`company_code` = {$companyCode} AND au.id = {$apiUser} AND branch = 'MAIN' AND au.vendor_id = vd.id";
-        return $query; //$this->dm->getID($query, array(":c" => $companyCode, ":a" => $apiUser));
+                WHERE vd.`company_code` = :c AND au.id = :a AND branch = 'MAIN' AND au.vendor_id = vd.id";
+        return $this->dm->getID($query, array(":c" => $companyCode, ":a" => $apiUser));
     }
 }

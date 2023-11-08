@@ -52,7 +52,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         }
 
         $expose = new APIEndpointHandler();
-        $user = $expose->authenticateAccess($authUsername, $authPassword);
+        echo $expose->authenticateAccess($authUsername, $authPassword);
 
         if (!$user) {
             http_response_code(401); // Unauthorized
