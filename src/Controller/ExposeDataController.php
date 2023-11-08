@@ -245,6 +245,6 @@ class ExposeDataController
     {
         $query = "SELECT vd.`id` FROM vendor_details AS vd, api_users AS au 
                 WHERE vd.`company_code` = :c AND au.id = :a AND branch = 'MAIN' AND au.vendor_id = vd.id";
-        return $this->dm->getID($query, array(":c" => $companyCode, ":a" => $apiUser));
+        return $query; //$this->dm->getID($query, array(":c" => $companyCode, ":a" => $apiUser));
     }
 }
