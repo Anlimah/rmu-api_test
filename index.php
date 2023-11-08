@@ -52,7 +52,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         }
 
         $expose = new APIEndpointHandler();
-        echo $expose->authenticateAccess($authUsername, $authPassword);
+        $user = $expose->authenticateAccess($authUsername, $authPassword);
 
         if (!$user) {
             http_response_code(401); // Unauthorized
@@ -100,7 +100,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         }
 
         header("Content-Type: application/json");
-        echo json_encode($response);
+        echo json_encode($user);
         exit;
 
         break;
