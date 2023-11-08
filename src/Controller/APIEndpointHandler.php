@@ -128,7 +128,7 @@ class APIEndpointHandler
 
         $extTransLen = strlen($payload["ext_trans_id"]);
         if ($extTransLen >= 15 && $extTransLen <= 20)
-            return array("resp_code" => "704", "message" => "Invalid external transaction ID (ext_trans_id) length.");
+            return array("resp_code" => "704", "message" => "Invalid external transaction ID (ext_trans_id) length. {$extTransLen}");
 
         if (!$this->checkCompanyCode($payload["ext_trans_id"], $api_user))
             return array("resp_code" => "705", "message" => "Invalid external transaction ID (ext_trans_id) code.");
