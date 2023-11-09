@@ -55,7 +55,7 @@ class ExposeDataController
     {
         if (empty($input)) return false;
         $user_input = htmlentities(htmlspecialchars($input));
-        $validated_input = (bool) preg_match('/^[A-Za-z0-9()+]/', $user_input);
+        $validated_input = (bool) preg_match('/[A-Za-z0-9()+]+/', $user_input);
         if ($validated_input) return $user_input;
         return false;
     }
@@ -64,7 +64,7 @@ class ExposeDataController
     {
         if (empty($input)) return false;
         $user_input = htmlentities(htmlspecialchars($input));
-        $validated_input = (bool) preg_match('/^[A-Za-z0-9()+@#.-_=$&!`]/', $user_input);
+        $validated_input = (bool) preg_match('/[A-Za-z0-9()+@#.-_=$&!`]+/', $user_input);
         if ($validated_input) return $user_input;
         return false;
     }
@@ -73,7 +73,7 @@ class ExposeDataController
     {
         if (empty($input)) return false;
         $user_input = htmlentities(htmlspecialchars($input));
-        $validated_input = (bool) preg_match('/^[0-9]/', $user_input);
+        $validated_input = (bool) preg_match('/[0-9]+/', $user_input);
         if ($validated_input) return true;
         return false;
     }
@@ -82,7 +82,7 @@ class ExposeDataController
     {
         if (empty($input)) return false;
         $user_input = htmlentities(htmlspecialchars($input));
-        $validated_input = (bool) preg_match('/^[A-Za-z]+$/', $user_input);
+        $validated_input = (bool) preg_match('/[A-Za-z,]+/', $user_input);
         if ($validated_input) return $user_input;
         return false;
     }
