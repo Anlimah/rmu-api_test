@@ -173,7 +173,8 @@ class APIEndpointHandler
         if (!empty($this->expose->verifyExternalTransID($payload["ext_trans_id"], $api_user)))
             return array("resp_code" => "803", "message" => "Duplicate transaction request.");
 
-        $formInfo = $this->expose->getFormDetailsByFormName($payload["form_type"]);
+        //$formInfo = $this->expose->getFormDetailsByFormName($payload["form_type"]);
+        return $this->expose->getFormDetailsByFormName($payload["form_type"]);
         if (empty($formInfo)) return array("resp_code" => "804", "message" => "Invalid form type.");
 
         $vendorID = $this->expose->getVendorIdByAPIUser($api_user);
