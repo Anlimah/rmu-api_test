@@ -135,7 +135,6 @@ class ExposeDataController
 
     public function getFormDetailsByFormName($form_name)
     {
-        return "SELECT * FROM `forms` WHERE `name` = $form_name";
         return $this->dm->getData("SELECT * FROM `forms` WHERE `name` = :fn", array(":fn" => $form_name));
     }
 
