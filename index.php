@@ -100,8 +100,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         }
 
         header("Content-Type: application/json");
-        echo json_encode($response);
-        exit;
+        echo json_encode($_SERVER);
 
         break;
 
@@ -122,3 +121,4 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         header("HTTP/1.1 403 Forbidden");
         break;
 }
+exit();
