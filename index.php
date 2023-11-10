@@ -100,7 +100,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         }
 
         header("Content-Type: application/json");
-        echo json_encode($_SERVER);
+        echo json_encode($response);
 
         break;
 
