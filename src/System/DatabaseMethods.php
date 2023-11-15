@@ -17,11 +17,8 @@ class DatabaseMethods
     {
         $stmt = $this->conn->prepare($str);
         $stmt->execute($params);
-        if (explode(' ', $str)[0] == 'SELECT' || explode(' ', $str)[0] == 'CALL') {
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        } elseif (explode(' ', $str)[0] == 'INSERT' || explode(' ', $str)[0] == 'UPDATE' || explode(' ', $str)[0] == 'DELETE') {
-            return 1;
-        }
+        if (explode(' ', $str)[0] == 'SELECT' || explode(' ', $str)[0] == 'CALL') return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        elseif (explode(' ', $str)[0] == 'INSERT' || explode(' ', $str)[0] == 'UPDATE' || explode(' ', $str)[0] == 'DELETE') return 1;
     }
 
     //Get raw data from db
@@ -29,11 +26,8 @@ class DatabaseMethods
     {
         try {
             $result = $this->query($str, $params);
-            if (!empty($result)) {
-                return $result[0]["id"];
-            } else {
-                return 0;
-            }
+            if (!empty($result)) return $result[0]["id"];
+            else return 0;
         } catch (\Exception $e) {
             echo $e->getMessage();
         }
@@ -44,11 +38,8 @@ class DatabaseMethods
     {
         try {
             $result = $this->query($str, $params);
-            if (!empty($result)) {
-                return $result;
-            } else {
-                return 0;
-            }
+            if (!empty($result)) return $result;
+            else return 0;
         } catch (\Exception $e) {
             echo $e->getMessage();
         }
@@ -59,11 +50,8 @@ class DatabaseMethods
     {
         try {
             $result = $this->query($str, $params);
-            if (!empty($result)) {
-                return $result;
-            } else {
-                return 0;
-            }
+            if (!empty($result)) return $result;
+            else return 0;
         } catch (\Exception $e) {
             echo $e->getMessage();
         }

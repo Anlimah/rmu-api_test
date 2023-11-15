@@ -180,7 +180,7 @@ class APIEndpointHandler
         if (empty($vendorID)) return array("resp_code" => "805", "message" => "Failed fetching vendor details for processing.");
 
         $adminPeriod = $this->expose->getCurrentAdmissionPeriodID();
-        if (empty($adminPeriod)) return array("resp_code" => "806", "message" => "Admission is currently closed.");
+        if (empty($adminPeriod)) return array("resp_code" => "806", "message" => "All admission currently closed.");
 
         $data['branch']         = $payload["branch_name"];
         $data['first_name']     = $payload["customer_first_name"];

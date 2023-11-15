@@ -24,7 +24,7 @@ class ExposeDataController
         return rand($first, $second);
     }
 
-    public function validateEmail($input)
+    public function validateEmail($input): mixed
     {
         if (empty($input)) return false;
         $user_email = htmlentities(htmlspecialchars($input));
@@ -33,7 +33,7 @@ class ExposeDataController
         return $user_email;
     }
 
-    public function validateInput($input)
+    public function validateInput($input): mixed
     {
         if (empty($input)) return false;
         $user_input = htmlentities(htmlspecialchars($input));
@@ -51,7 +51,7 @@ class ExposeDataController
         return false;
     }
 
-    public function validateCountryCode($input)
+    public function validateCountryCode($input): mixed
     {
         if (empty($input)) return false;
         $user_input = htmlentities(htmlspecialchars($input));
@@ -60,7 +60,7 @@ class ExposeDataController
         return false;
     }
 
-    public function validatePassword($input)
+    public function validatePassword($input): mixed
     {
         if (empty($input)) return false;
         $user_input = htmlentities(htmlspecialchars($input));
@@ -106,33 +106,6 @@ class ExposeDataController
         return $this->dm->getData("SELECT `id` FROM `admission_period` WHERE `active` = 1 AND `closed` = 0");
     }
 
-    public function getIPAddress()
-    {
-        //whether ip is from the share internet  
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-            $ip = $_SERVER['HTTP_CLIENT_IP'];
-        }
-        //whether ip is from the proxy  
-        elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        }
-        //whether ip is from the remote address  
-        else {
-            $ip = $_SERVER['REMOTE_ADDR'];
-        }
-        return $ip;
-    }
-
-    public function getDeciveInfo()
-    {
-        return $_SERVER['HTTP_USER_AGENT'];
-    }
-
-    public function getFormPriceA(int $form_id)
-    {
-        return $this->dm->getData("SELECT * FROM `forms` WHERE `id` = :fi", array(":fi" => $form_id));
-    }
-
     public function getFormDetailsByFormName($form_name)
     {
         return $this->dm->getData("SELECT * FROM `forms` WHERE `name` = :fn", array(":fn" => $form_name));
@@ -143,23 +116,6 @@ class ExposeDataController
         $sql = "SELECT EXTRACT(YEAR FROM (SELECT `start_date` FROM admission_period WHERE active = 1)) AS 'year'";
         $year = (string) $this->dm->getData($sql)[0]['year'];
         return (int) substr($year, 2, 2);
-    }
-
-    public function getAvailableForms()
-    {
-        return $this->dm->getData("SELECT * FROM `forms`");
-    }
-
-    public function getUndergradAndPostgradForms()
-    {
-        return $this->dm->getData("SELECT f.* FROM `forms` AS f, `form_categories` AS fc 
-        WHERE f.form_category = fc.id AND fc.name IN ('UNDERGRADUATE', 'POSTGRADUATE')");
-    }
-
-    public function getOtherForms()
-    {
-        return $this->dm->getData("SELECT f.* FROM `forms` AS f, `form_categories` AS fc 
-        WHERE f.form_category = fc.id AND fc.name NOT IN ('UNDERGRADUATE', 'POSTGRADUATE')");
     }
 
     public function sendHubtelSMS($url, $payload)
@@ -180,19 +136,6 @@ class ExposeDataController
         return $this->sendHubtelSMS($url, $payload);
     }
 
-    public function getVendorPhone($vendor_id)
-    {
-        $sql = "SELECT `country_code`, `phone_number` FROM `vendor_details` WHERE `id`=:i";
-        return $this->dm->getData($sql, array(':i' => $vendor_id));
-    }
-
-    public function vendorExist($vendor_id)
-    {
-        $str = "SELECT `id` FROM `vendor_details` WHERE `id`=:i";
-        return $this->dm->getID($str, array(':i' => $vendor_id));
-    }
-
-    //
     public function activityLogger($request, $route, $api_user)
     {
         $query = "INSERT INTO `api_request_logs` (`request`, `route`, `api_user`) VALUES(:r, :t, :u)";
