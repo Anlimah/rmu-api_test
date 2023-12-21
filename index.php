@@ -15,8 +15,9 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         }
 
         // Check if Content-Type header is set to json
-        if ($_SERVER["CONTENT_TYPE"] !== "application/json") {
+        if ($_SERVER["CONTENT_TYPE"] !== "application/json" || strpos($_SERVER["CONTENT_TYPE"], "application/json") === false) {
             http_response_code(415); // Unsupported Media Type
+            header('Content-Type: application/json');
             echo json_encode(array("resp_code" => "602", "message" => "Only JSON-encoded requests are allowed."));
             exit;
         }
@@ -33,6 +34,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 
         if (strpos($authorizationHeader, 'Basic') === false) {
             http_response_code(401); // Unauthorized
+            header('Content-Type: application/json');
             header('WWW-Authenticate: Basic realm="API Authentication"');
             echo json_encode(array("resp_code" => "604", "message" => "Basic Authorization required."));
             exit;
@@ -56,6 +58,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 
         if (!$user) {
             http_response_code(401); // Unauthorized
+            header('Content-Type: application/json');
             header('WWW-Authenticate: Basic realm="API Authentication"');
             echo json_encode(array("resp_code" => "606", "message" => "Invalid authorization credentials."));
             exit;
@@ -101,7 +104,6 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 
         header("Content-Type: application/json");
         echo json_encode($response);
-
         break;
 
     case 'GET':
