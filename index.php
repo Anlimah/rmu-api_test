@@ -73,7 +73,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         switch ($endpoint) {
             case '/getForms':
                 $response = $expose->getForms($_POST, $user);
-                http_response_code(201);
+                http_response_code(200);
                 break;
 
             case '/purchaseForm':
@@ -88,12 +88,12 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 
             case '/purchaseStatus':
                 $response = $expose->purchaseStatus($_POST, $user);
-                http_response_code(201);
+                http_response_code(200);
                 break;
 
             case '/purchaseInfo':
                 $response = $expose->purchaseInfo($_POST, $user);
-                http_response_code(201);
+                http_response_code(200);
                 break;
 
             default:
